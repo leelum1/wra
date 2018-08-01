@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block head %}
+  <meta name="description" content="Groundwater observation wells in Trinidad and Tobago">
+  <title>Groundwater Observation Wells in Trinidad and Tobago</title>
+  <style media="screen">
+    #copy{
+      color: blue;
+      font-size: 12px;
+    }
+
+    #copy:hover{
+      text-decoration: underline;
+    }
+
+    td > a{
+      text-decoration: none;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">SOP Home</a>
+  {% if user.is_management %}
+    <a class="sidebar-button" href="{% url 'admin:index' %}">Add or Edit Well</a>
+  {% endif %}
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1 class="display-4">Groundwater</h1>
+    <p class="lead">This is list of all {{ number }} wells that the WRA use to monitor the health
+      of the country's aquifers. Click on any well to view more details or query data.</p>
+    <input id="searchInput" class="form-control" type="text" name="name" placeholder="Search gauges here">
+
+    <div style="text-align:right;">
+      <a id="copy" onclick="CopyStuff(document.getElementById('welltable'));">Copy table</a>
+    </div>
+    <table class="table-striped" id="welltable">
+      <thead>
+        <th>Name</th>
+        <th>Index_no</th>
+        <th>Wellfield</th>
+      </thead>
+      <tbody>
+        {% for well in wells %}
+          <tr>
+            <td><a href="{% url 'groundwater_app:welldetail' pk=well.index_no %}">{{ well.name }}</a></td>
+            <td><a href="{% url 'groundwater_app:welldetail' pk=well.index_no %}">{{ well.index_no }}</a></td>
+            <td>{{ well.wellfield }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}
+{% block javascript %}
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript">
+    //DataTable filter
+    $(document).ready(function() {
+      $('#welltable').DataTable({
+        "order": [ 0, 'asc' ],
+        "paging": false,
+        "searching": false,
+        "info": false,
+      });
+    } );
+  </script>
+{% endblock javascript %}

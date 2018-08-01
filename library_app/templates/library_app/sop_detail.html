@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load md2 %}
+
+{% block head %}
+  <title>{{ sop.title }}</title>
+  <meta name="description" content="{{ sop.description }}">
+  <style media="screen">
+    h4{
+      margin-top: 20px;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">SOP Home</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>{{ sop.title }}</h1>
+    {{ sop.text|markdown }}
+  </div>
+{% endblock content %}
+{% block javascript %}
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+{% endblock javascript %}

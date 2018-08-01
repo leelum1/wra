@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block head %}
+  <meta name="description" content="Locations of watersheds, rainfall and streamflow gauges, observation wells in Trinidad and Tobago">
+  <title>Map of Water Resources data in Trinidad and Tobago</title>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css' rel='stylesheet' />
+  <link rel="stylesheet" href="{% static 'css/map.css' %}">
+{% endblock head %}
+{% block body_block %}
+  <div class="row no-gutters">
+    <div class="col-md-3" style="background-color:white; height:90vh;">
+      <div id='menu' style="margin-bottom:0; background-color:white;">
+        <p style="text-align:center; margin:0; padding:8px;"><strong>Layer Control</strong></p>
+        <div class="row no-gutters">
+          <button class="main-layer" onclick="ToggleLayer('Watersheds')">
+            <svg height="15" width="10%">
+              <line x1="50%" y1="0" x2="50%" y2="100%" style="stroke:rgb(200, 100, 240);stroke-width:2" />
+            </svg>
+            Watersheds
+          </button>
+          <button id="Watershedsarrow" class="arrow-layer" disabled onclick="LayerDetail('Watersheds')"><img class="rightArrow" src="{% static 'images/rightArrow.png' %}" alt="rightArrow"></button>
+        </div>
+        <div class="row no-gutters">
+          <button class="main-layer" onclick="ToggleLayer('Rainfall')">
+            <svg height="15" width="10%">
+              <circle cx="50%" cy="50%" r="5" fill="red" />
+            </svg>
+            Rainfall
+          </button>
+          <button id="Rainfallarrow" class="arrow-layer" disabled onclick="LayerDetail('Rainfall')"><img class="rightArrow" src="{% static 'images/rightArrow.png' %}" alt="rightArrow"></button>
+        </div>
+        <div class="row no-gutters">
+          <button class="main-layer" onclick="ToggleLayer('Intakes')">
+            <svg height="15" width="10%">
+              <circle cx="50%" cy="50%" r="5" fill="blue" />
+            </svg>
+            Intakes
+          </button>
+          <button id="Intakesarrow" class="arrow-layer" disabled onclick="LayerDetail('Intakes')"><img class="rightArrow" src="{% static 'images/rightArrow.png' %}" alt="rightArrow"></button>
+        </div>
+        <div class="row no-gutters">
+          <button class="main-layer" onclick="ToggleLayer('Streamflow')">
+            <svg height="15" width="10%">
+              <circle cx="50%" cy="50%" r="5" fill="green" />
+            </svg>
+            Streamflow Gauges
+          </button>
+          <button id="Streamflowarrow" class="arrow-layer" disabled onclick="LayerDetail('Streamflow')"><img class="rightArrow" src="{% static 'images/rightArrow.png' %}" alt="rightArrow"></button>
+        </div>
+        <div class="row no-gutters">
+          <button class="main-layer" onclick="ToggleLayer('Reservoirs')">
+            <svg height="15" width="10%">
+              <rect width="80%" height="100%" style="fill:#97ABF3;stroke-width:3;" />
+            </svg>
+            Reservoirs
+          </button>
+          <button id="Reservoirsarrow" class="arrow-layer" disabled onclick="LayerDetail('Reservoirs')"><img class="rightArrow" src="{% static 'images/rightArrow.png' %}" alt="rightArrow"></button>
+        </div>
+        <div class="row no-gutters">
+          <button class="main-layer">
+            <svg height="15" width="10%">
+              <line x1="50%" y1="0" x2="50%" y2="100%" style="stroke:white;stroke-width:1" />
+            </svg>
+            Wells (not up)
+          </button>
+          <button id="Wellsarrow" class="arrow-layer" disabled onclick="LayerDetail('Wells')"><img class="rightArrow" src="{% static 'images/rightArrow.png' %}" alt="rightArrow"></button>
+        </div>
+        <div class="row no-gutters">
+          <button class="main-layer">
+            <svg height="15" width="10%">
+              <line x1="50%" y1="0" x2="50%" y2="100%" style="stroke:white;stroke-width:1" />
+            </svg>
+            Aquifers (not up)
+          </button>
+        </div>
+        <div class="row no-gutters">
+          <button class="main-layer" onclick="ToggleLayer('Isohyetal')">
+            <svg height="15" width="10%">
+              <line x1="50%" y1="0" x2="50%" y2="100%" style="stroke:#ff69b4;stroke-width:2" />
+            </svg>
+            Annual Isohyetals
+          </button>
+        </div>
+        <div class="row no-gutters">
+          <button class="main-layer" onclick="ToggleLayer('Thiessen')">
+            <svg height="15" width="10%">
+              <line x1="50%" y1="0" x2="50%" y2="100%" style="stroke:rgb(255, 165, 0);stroke-width:2" />
+            </svg>
+            Thiessen Polygons
+          </button>
+        </div>
+      </div>
+
+      <div id="intro" class="container" style="padding:10px; margin-top:20px;">
+        <p style="font-size:11px;">This map shows the active hydrological gauges
+        maintained by the WRA. Use the layer control to show and hide layers,
+        and also explore features in the layer using the arrows.</p>
+      </div>
+    </div>
+
+    <div class="col-md-9 col-sm-12">
+      <div class="map-overlay">
+        <div id='feature-listing' class='listing'>
+        </div>
+      </div>
+
+      <div id='map'></div>
+
+      <img id="basemenu" onclick="switchBase()"/>
+      {# <button id="basemenu" type="button" onclick="switchLayer()">Sat</button>#}
+
+      <pre id="coords"></pre>
+    </div>
+  </div>
+{% endblock body_block %}
+{% block javascript %}
+  <script src='//api.tiles.mapbox.com/mapbox.js/plugins/geo-viewport/v0.1.1/geo-viewport.js'></script>
+  <script src="{% static 'js/map.js' %}"></script>
+  <script type="text/javascript">
+    map.on('click', 'Watersheds', function (e) {
+      var slug = e.features[0].properties.slug;
+      var url_mask = "{% url 'watershed_app:detail' slug='Couva' %}".replace('Couva', slug);
+
+      if (map.getLayoutProperty('Rainfall', 'visibility') === 'visible'
+        ||map.getLayoutProperty('Intakes', 'visibility') === 'visible'
+        ||map.getLayoutProperty('Streamflow', 'visibility') === 'visible' ) {
+      } else {
+        new mapboxgl.Popup().setLngLat(e.lngLat)
+            .setHTML('<h6>' + e.features[0].properties.Name + ' Watershed</h6>\
+            <table><tr><td>Area:</td><td>' + (e.features[0].properties.Area/1000000).toFixed(2) + 'km<sup>2</sup></td></tr>\
+            <tr><td>Perimeter:</td><td>' + (e.features[0].properties.Perimeter/1000).toFixed(2) + 'km</td></tr>\
+            <tr><td colspan=2 style="text-align:center; height:40px; padding:10px;"><a href=' + url_mask + '>More details</a></td></tr></table>')
+            .addTo(map);
+        // var watersheds = map.queryRenderedFeatures('Watersheds');
+        // var filter = watersheds.reduce(function(memo) {
+        //         memo.push(e.features[0].properties.Name);
+        //         return memo;
+        //     }, ['in', 'Name']);
+        //
+        // map.setFilter("watersheds-highlighted", filter);
+      }
+    });
+
+    map.on('click', 'Rainfall', function (e) {
+      var coordinates = e.features[0].geometry.coordinates.slice();
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      };
+      var code = e.features[0].properties.Number.replace(":", ".");
+      var url_mask = "{% url 'data_app:gaugedetail' pk=1.1 %}".replace(/1.1/, code);
+
+      new mapboxgl.Popup().setLngLat(coordinates)
+          .setHTML('<h6>' + e.features[0].properties.Name + ' Pot Gauge</h6>\
+          <table><tr><td>Code:</td><td>' + e.features[0].properties.Number + '</td></tr>\
+          <tr><td>Watershed:</td><td>' + e.features[0].properties.Watershed + '</td></tr>\
+          <tr><td>Long:</td><td>' + e.lngLat.lng.toFixed(6) + '</td></tr>\
+          <tr><td>Lat:</td><td>' + e.lngLat.lat.toFixed(6) + '</td></tr>\
+          <tr><td colspan=2 style="text-align:center; height:40px;"><a href=' + url_mask + '>Navigate to Data Query</a></td></tr></table>')
+          .addTo(map);
+      });
+
+    map.on('click', 'Intakes', function (e) {
+      var coordinates = e.features[0].geometry.coordinates.slice();
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      };
+      var code = e.features[0].properties.Code;
+      var url_mask = "{% url 'streamflow_app:metering_detail' pk=2.4 %}".replace(/2.4/, code);
+      new mapboxgl.Popup().setLngLat(coordinates)
+          .setHTML('<h6>' + e.features[0].properties.Name + ' Intake</h6>\
+          <table><tr><td>Code:</td><td>' + e.features[0].properties.Code + '</td></tr>\
+          <tr><td>Watershed:</td><td>' + e.features[0].properties.Watershed + '</td></tr>\
+          <tr><td>Long:</td><td>' + e.lngLat.lng.toFixed(6) + '</td></tr>\
+          <tr><td>Lat:</td><td>' + e.lngLat.lat.toFixed(6) + '</td></tr>\
+          <tr><td colspan=2 style="text-align:center; height:40px;"><a href=' + url_mask + '>Navigate to Data Query Page</a></td></tr></table>')
+          .addTo(map);
+    });
+
+    map.on('click', 'Reservoirs', function (e) {
+      var slug = e.features[0].properties.Slug;
+      var url_mask = "{% url 'reservoir_app:reservoir'%}"//.replace('Hollis', slug);
+
+      new mapboxgl.Popup().setLngLat(e.lngLat)
+      .setHTML('<h6>' + e.features[0].properties.Name + ' Reservoir</h6>\
+      <table><tr><td>Watershed:</td><td>' + e.features[0].properties.Watershed + '</td></tr>\
+      <tr><td>Area:</td><td>' + (e.features[0].properties.Area/1000000).toFixed(2) + ' km<sup>2</sup></td></tr>\
+      <tr><td colspan=2 style="text-align:center; height:40px;"><a href=' + url_mask + '>More details</a></td></tr></table>')
+      .addTo(map);
+    });
+
+    map.on('click', 'Wells', function (e) {
+      var coordinates = e.features[0].geometry.coordinates.slice();
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      };
+      var url_mask = "{% url 'groundwater_app:groundwater' %}";
+      new mapboxgl.Popup().setLngLat(coordinates)
+          .setHTML('<h6>' + e.features[0].properties.Index + ' Well</h6>\
+          <table><tr><td>Long:</td><td>' + e.lngLat.lng.toFixed(6) + '</td></tr>\
+          <tr><td>Lat:</td><td>' + e.lngLat.lat.toFixed(6) + '</td></tr>\
+          <tr><td colspan=2 style="text-align:center; height:40px;"><a href=' + url_mask + '>Navigate to Groundwater Home</a></td></tr></table>')
+          .addTo(map);
+    });
+  </script>
+  <script type="text/javascript">
+    //populate attribute list
+    function renderListings(features, layer) {
+      if(layer == 'Watersheds'){
+        listingEl.innerHTML = '<p>Watersheds</p>'
+      } else if(layer == 'Rainfall'){
+        listingEl.innerHTML = '<p>Rainfall</p>'
+      } else if(layer == 'Intakes'){
+        listingEl.innerHTML = '<p>Intakes</p>'
+      } else if(layer == 'Streamflow'){
+        listingEl.innerHTML = '<p>Streamflow</p>'
+      } else if(layer == 'Reservoirs'){
+        listingEl.innerHTML = '<p>Reservoirs</p>'
+      };
+      features.forEach(function(feature) {
+          var prop = feature.properties;
+          var item = document.createElement('a');
+          if (layer == 'Watersheds'){
+            item.textContent = prop.Name;
+            item.addEventListener('click', function() {
+              var slug = prop.slug;
+              var url_mask = "{% url 'watershed_app:detail' slug='Couva' %}".replace('Couva', slug);
+
+              map.flyTo({center: [prop.CentroidX, prop.CentroidY], zoom: 12});
+              new mapboxgl.Popup().setLngLat([prop.CentroidX, prop.CentroidY])
+                  .setHTML('<h6>' + prop.Name + ' Watershed</h6>\
+                  <table><tr><td>Area:</td><td>' + (prop.Area/1000000).toFixed(2) + 'km<sup>2</sup></td></tr>\
+                  <tr><td>Perimeter:</td><td>' + (prop.Perimeter/1000).toFixed(2) + 'km</td></tr>\
+                  <tr><td colspan=2 style="text-align:center; height:40px; padding:10px;"><a href=' + url_mask + '>More details</a></td></tr></table>')
+                  .addTo(map);
+              // var watersheds = map.queryRenderedFeatures('Watersheds');
+              // var filter = watersheds.reduce(function(memo) {
+              //         memo.push(prop.Name);
+              //         return memo;
+              //     }, ['in', 'Name']);
+              //
+              // map.setFilter("watersheds-highlighted", filter);
+            });
+          }else if(layer == 'Rainfall'){
+            item.textContent = prop.Name;
+            item.addEventListener('click', function() {
+              var code = prop.Number.replace(":", ".");
+              var url_mask = "{% url 'data_app:gaugedetail' pk=1.1 %}".replace(/1.1/, code);
+
+              new mapboxgl.Popup().setLngLat(feature.geometry.coordinates)
+              .setHTML('<h6>' + prop.Name + ' Pot Gauge</h6>\
+              <table><tr><td>Code:</td><td>' + prop.Number + '</td></tr>\
+              <tr><td>Watershed:</td><td>' + prop.Watershed + '</td></tr>\
+              <tr><td>Long:</td><td>' + feature.geometry.coordinates[0].toFixed(6) + '</td></tr>\
+              <tr><td>Lat:</td><td>' + feature.geometry.coordinates[1].toFixed(6) + '</td></tr>\
+              <tr><td colspan=2 style="text-align:center; height:40px;"><a href=' + url_mask + '>Navigate to Data Query</a></td></tr></table>')
+              .addTo(map);
+            });
+          }else if(layer == 'Intakes'){
+            item.textContent = prop.Name;
+            item.addEventListener('click', function() {
+              var code = prop.Code;
+              var url_mask = "{% url 'streamflow_app:metering_detail' pk=2.4 %}".replace(/2.4/, code);
+
+              new mapboxgl.Popup().setLngLat(feature.geometry.coordinates)
+              .setHTML('<h6>' + prop.Name + ' Intake</h6>\
+              <table><tr><td>Code:</td><td>' + prop.Code + '</td></tr>\
+              <tr><td>Watershed:</td><td>' + prop.Watershed + '</td></tr>\
+              <tr><td>Long:</td><td>' + feature.geometry.coordinates[0].toFixed(6) + '</td></tr>\
+              <tr><td>Lat:</td><td>' + feature.geometry.coordinates[1].toFixed(6) + '</td></tr>\
+              <tr><td colspan=2 style="text-align:center; height:40px;"><a href=' + url_mask + '>Navigate to Data Query</a></td></tr></table>')
+              .addTo(map);
+            });
+          }else if(layer == 'Streamflow'){
+            item.textContent = prop.Name;
+            item.addEventListener('click', function() {
+              var code = prop.Code;
+              //var url_mask = "{% url 'streamflow_app:metering_detail' pk=2.4 %}".replace(/2.4/, code);
+
+              new mapboxgl.Popup().setLngLat(feature.geometry.coordinates)
+              .setHTML('<h6>' + prop.Name + ' Intake</h6>\
+              <table><tr><td>Code:</td><td>' + prop.Code + '</td></tr>\
+              <tr><td>Watershed:</td><td>' + prop.Watershed + '</td></tr>\
+              <tr><td>Long:</td><td>' + feature.geometry.coordinates[0].toFixed(6) + '</td></tr>\
+              <tr><td>Lat:</td><td>' + feature.geometry.coordinates[1].toFixed(6) + '</td></tr></table>')
+              .addTo(map);
+            });
+          }else if(layer == 'Reservoirs'){
+            item.textContent = prop.Name;
+            item.addEventListener('click', function() {
+              map.flyTo({center: [prop.CentroidX, prop.CentroidY], zoom: 12});
+            });
+          } else if(layer =='Wells'){
+            item.textContent = prop.Index;
+            item.addEventListener('click', function() {
+              var url_mask = "{% url 'groundwater_app:groundwater' %}";
+              new mapboxgl.Popup().setLngLat(feature.geometry.coordinates)
+                  .setHTML('<h6>' + feature.properties.Index + ' Well</h6>\
+                  <table><tr><td>Long:</td><td>' + feature.geometry.coordinates[0].toFixed(6) + '</td></tr>\
+                  <tr><td>Lat:</td><td>' + feature.geometry.coordinates[1].toFixed(6) + '</td></tr>\
+                  <tr><td colspan=2 style="text-align:center; height:40px;"><a href=' + url_mask + '>Navigate to Groundwater Home</a></td></tr></table>')
+                  .addTo(map);
+            });
+          }
+          listingEl.appendChild(item);
+      });
+    };
+  </script>
+{% endblock javascript %}

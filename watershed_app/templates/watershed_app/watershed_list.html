@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+  <meta name="description" content="A list of all watersheds in Trinidad and Tobago and printable maps">
+  <title>Watersheds in Trinidad and Tobago</title>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.css' rel='stylesheet' />
+  <style media="screen">
+    #copy{
+      color: blue;
+      font-size: 12px;
+    }
+
+    #copy:hover{
+      text-decoration: underline;
+    }
+
+    .container-fluid{
+      padding-left: 5%;
+      padding-right: 5%;
+    }
+    a{
+      text-decoration: none;
+    }
+
+    #map{
+      height: 400px;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+      border: 1px solid black;
+    }
+
+    .map-image{
+      margin-top: 10px;
+      width: 100%;
+    }
+  </style>
+{% endblock head %}
+{% block body_block %}
+  <div class="container-fluid">
+    <h1 class="display-4">Watersheds in Trinidad and Tobago</h1>
+    <p>There are 69 watersheds in Trinidad(54) and Tobago(15). The watersheds are
+      divided into hydrometric areas, of which there are 9 in Trinidad and 5 in Tobago.
+      To learn more about watersheds,
+      <a href="https://water.usgs.gov/edu/watershed.html">click here to visit the USGS Water Science School.</a></p>
+    <input id="searchInput" class="form-control" type="text" name="name" placeholder="Search for watershed here">
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6 col-sm-12">
+        <div style="text-align:right;">
+          <a id="copy" onclick="CopyStuff(document.getElementById('watershedtable'));">Copy table</a>
+        </div>
+        <table id='watershedtable'>
+          <thead>
+            <th>Name</th>
+            <th>Hydrometric Area</th>
+            <th>Area (km<sup>2</sup>)</th>
+          </thead>
+          <tbody>
+            {% for watershed in watersheds %}
+              <tr>
+                <td><a href="{% url 'watershed_app:detail' slug=watershed.slug %}">{{ watershed.name }}</a></td>
+                <td><a href="{% url 'watershed_app:detail' slug=watershed.slug %}">{{ watershed.hydrometric_area }} - {{ watershed.get_hydrometric_area_display }}</a></td>
+                <td>{{ watershed.area|floatformat:2 }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-md-6">
+        <div id="map"></div>
+
+        <div class="maps" style="margin-top:20px;">
+          <h3>Printer friendly maps here</h3>
+          <a href="https://s3.amazonaws.com/wrabucket/static/images/Trinidad_Watersheds.jpg">
+            <img class="map-image" src="{% static 'images/Trinidad_Watersheds.jpg' %}" alt="">
+          </a>
+          <a href="https://s3.amazonaws.com/wrabucket/static/images/Tobago_Watersheds.jpg">
+            <img class="map-image" src="{% static 'images/Tobago_Watersheds.jpg' %}" alt="">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock body_block %}
+{% block javascript %}
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      results = $('#watershedtable').DataTable({
+        "order": [ 0, 'asc' ],
+        "paging": false,
+        "searching": true,
+        "info": false,
+        "dom": 'lrtip',
+      });
+      $('#searchInput').keyup(function(){
+        results.search($(this).val()).draw() ;
+      })
+    });
+  </script>
+
+  <script src="{% static 'js/watershed.js' %}"></script>
+
+  <script type="text/javascript">
+    //Watersheds highlight
+    map.on('click', 'Watersheds', function (e) {
+      var slug = e.features[0].properties.slug;
+      var url_mask = "{% url 'watershed_app:detail' slug='Couva' %}".replace('Couva', slug);
+
+      new mapboxgl.Popup().setLngLat(e.lngLat)
+          .setHTML('<a href=' + url_mask + '>' + e.features[0].properties.Name + '</a>')
+          .addTo(map);
+
+      var watersheds = map.queryRenderedFeatures('Watersheds');
+      var filter = watersheds.reduce(function(memo) {
+              memo.push(e.features[0].properties.Name);
+              return memo;
+          }, ['in', 'Name']);
+
+      map.setFilter("watersheds-highlighted", filter);
+    });
+  </script>
+{% endblock javascript %}

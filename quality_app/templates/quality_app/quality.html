@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+  <meta name="description" content="Water quality monitoring stations in Trinidad and Tobago">
+  <title>Water Quality Monitoring Trinidad and Tobago</title>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data' %}" style="padding-bottom:20px; padding-top:20px; border-bottom:1px solid grey;">Data home</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Water Quality</h1>
+    <p>The WRA collects water quality data at several points across the country.
+      In addition, several adopters of
+      <a href="http://www.adoptarivertt.com/">the Adopt-A-River programme</a>
+      collect data at their respective 'adopted' rivers. This data can be accessed here.</p>
+
+    <p><strong>I haven't put anything here as yet, but when I do, you can expect it to be in the same
+      format as the other data - </strong><em>Yes yes</em></p>
+  </div>
+{% endblock content %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block head %}
+  <title>Library of the Water Resources Agency of Trinidad and Tobago</title>
+  <style media="screen">
+    a{
+      text-decoration: none;
+    }
+    img{
+      border:1px solid black;
+      height:180px;
+    }
+
+    #title{
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    tr:first-child{
+      border-top: 20px solid grey;
+    }
+
+    tr{
+      height:200px;
+      border-bottom: 1px solid grey;
+    }
+
+    td{
+      vertical-align: top;
+      padding: 10px;
+      border:none;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'library_app:library' %}">Library Home</a>
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">SOP Central</a>
+  {% if user.is_staff %}
+    <a class="sidebar-button" href="{% url 'admin:index' %}">Add Book</a>
+  {% endif %}
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Search the Library</h1>
+    <p>Use the search bar below to search our library for documents and printer-friendly
+      maps produced by or for the Water Resources Agency of Trinidad and Tobago.</p>
+
+    <form style="text-align:center;" method="get">
+      <div class="input-group mb-3">
+        <input class="form-control" type="text" name="book" placeholder="Search by title, author, type here">
+        <div class="input-group-append">
+          <input type="submit" style="border-radius:0;" class="btn btn-success" value="Search!">
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="container-fluid">
+    <table style="width:100%;">
+      {% for book in books %}
+      <tr>
+        <td style="text-align:center; width:25%;">
+          <a href="{% url 'library_app:book-detail' pk=book.id %}">
+            {% if book.bookcover %}
+              <img src="{{ book.bookcover.url }}" alt="Book Cover">
+            {% else %}
+              <img src="{% static 'images/no_preview.png' %}" alt="Book Cover">
+            {% endif %}
+            </a>
+          </td>
+        <td style="width:60%;"><span id="title">{{ book.title }}</span> - <small>{{ book.year }}</small>
+          <br><p>{{ book.author }}</p>
+          <p><em>{{ book.description }}</em></p>
+        </td>
+        <td style="width:15%; text-align:right;">
+        {% if book.document and user.is_guest %}
+          <a class="btn btn-primary" style="width:100%; margin-bottom:10px;" target="_blank" href="{{ book.document.url }}">View PDF</a>
+        {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  {% include "pagination.html" %}
+
+{% endblock content %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block head %}
+  <meta name="description" content="Fuess gauges in Trinidad and Tobago">
+  <title>Fuess Gauges</title>
+  <style media="screen">
+
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data' %}" style="padding-bottom:20px; padding-top:20px; border-bottom:1px solid grey;">Data home</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">SOPs</a>
+  {% if user.is_management %}
+    <a class="sidebar-button" href="{% url 'admin:index' %}">Add or Edit Gauge</a>
+  {% endif %}
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Fuess Gauges</h1>
+    <p>The WRA has an extensive network of 2 recording streamflow gauges. So much
+      that I wasn't able to load them into the database as yet.</p>
+  </div>
+
+  <div class="container-fluid">
+    <table>
+      <thead>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Watershed</th>
+      </thead>
+      <tbody>
+        {% for gauge in gauges %}
+          <tr>
+            <td>{{ gauge.code }}</td>
+            <td>{{ gauge.river }}</td>
+            <td>{{ gauge.watershed }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}
+{% block javascript %}
+
+{% endblock javascript %}

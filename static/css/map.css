@@ -1,0 +1,164 @@
+/*Map*/
+#map{
+  position: absolute;
+  height:90vh;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+/*Sidebar menu*/
+#menu{
+  border-top:1px solid lightgrey;
+  border-bottom:1px solid lightgrey;
+  text-align: center;
+}
+
+#menu button {
+    font-size: 12px;
+    background-color: white;
+    text-align: left;
+    display: block;
+    padding:10px;
+    border-bottom: 1px solid grey;
+    margin:0;
+}
+
+#menu button:hover {
+    background-color: #f8f8f8;
+    color: #404040;
+}
+
+#menu button.active {
+    background-color: #B1D9F5;
+}
+
+#menu button.active:hover {
+    background: #97CDF3;
+}
+
+.main-layer{
+  width:100%;
+}
+
+.arrow-layer{
+  position: absolute;
+  right: 0;
+  z-index: 5;
+  opacity: 0.5;
+}
+
+.rightArrow{
+  height:10px;
+}
+
+.mapboxgl-popup-content {
+  padding: 15px;
+}
+
+td{
+  border:none;
+  height: 15px;
+}
+
+td > a{
+  padding: 10px;
+  color: white;
+  border-radius: 5px;
+  background-color: #3879F2;
+  text-decoration: none;
+}
+
+/*h6 used in popups*/
+h6{
+  text-align:center;
+  text-decoration: underline;
+  width: 100%;
+}
+
+.row > .btn{
+  border-radius: 0;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+/*Query rendered features*/
+.map-overlay {
+    position: absolute;
+    display: none;
+    width: 200px;
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    background-color: #fff;
+    border-left: 1px solid grey;
+    height: 100%;
+    overflow: hidden;
+    z-index:99;
+}
+
+.map-overlay input {
+    display: block;
+    border: none;
+    width: 100%;
+    border-radius: 3px;
+    padding: 10px;
+    margin: 0;
+}
+
+.map-overlay .listing {
+    overflow: auto;
+    max-height: 100%;
+}
+
+.map-overlay .listing > * {
+    display: block;
+    padding: 5px 10px;
+    margin: 0;
+}
+
+.map-overlay .listing p {
+    font-size: 16px;
+    padding: 10px;
+    text-align:center;
+    font-weight: bold;
+    border-bottom: 1px solid black;
+}
+
+.map-overlay .listing a {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+}
+
+.map-overlay .listing a:last-child {
+    border: none;
+}
+
+.map-overlay .listing a:hover {
+    background: #f0f0f0;
+}
+
+#basemenu{
+  position: absolute;
+  width:80px;
+  height:80px;
+  border: 1px solid grey;
+  bottom: 25px;
+  right: 5px;
+  z-index: 20;
+}
+
+#basemenu:hover{
+  cursor: pointer;
+  outline: lightgrey solid 3px;
+  transition: outline 0.3s;
+}
+
+/*Mouse coordinate finder*/
+#coords{
+  position:absolute;
+  top:0;
+  right:0;
+  z-index: 99;
+  padding: 0;
+  margin:0;
+}

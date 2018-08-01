@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block head %}
+  <meta name="description" content="Caroni-Arena reservoir data and description">
+  <title>Caroni-Arena Reservoir</title>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'reservoir_app:reservoir' %}">Reservoir Home</a>
+  <a class="sidebar-button" href="{% url 'library_app:projectionstheory' %}">Reservoir SOP</a>
+  <a class="sidebar-button" href="{% url 'reservoir_app:caronicreate' %}">Add Values</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container">
+    <h1>Caroni-Arena Reservoir</h1>
+  </div>
+
+  <div class="row container">
+    <div class="col-md-7 col-sm-12">
+      <p>The Caroni-Arena Reservoir is the largest reservoir in the country. It was
+        built by damming the Arena River. The areas served include Port-of-Spain.</p>
+      <p>The Caroni-Arena reservoir is unique in that water from the reservor is
+        not directly piped to the water treatment plant. Instead, the Caroni Water
+        Treatment plant pulls water from the Caroni river. At times of low flow in
+        the river, which is typical in the dry season, water is released from the
+        reservoir into the Caroni River over the Tumpuna weir, which thens flows
+        down the natural course fo the river to the treatment plant. The opposite
+        happens when there is a surplus of water in the river. Water is pumped from
+        the river to the reservoir if the reservoir is not already spilling.</p>
+      <p>Climatic station</p>
+      <p>Spillway design</p>
+    </div>
+    <div class="col-md-5 col-sm-12">
+      <div class="container">
+        <table>
+          <tr>
+            <td>Spillway Elevation</td>
+            <td>119 ft</td>
+          </tr>
+          <tr>
+            <td>Bottom Draw Off</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Maximum Depth</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Maximum Production</td>
+            <td>75 MGD</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="container" style="background-color:white; border-radius:5px; padding:20px;">
+        <h4 style="text-align:center;">Data query</h4>
+
+        <form method="get">
+          <div class="form-group">
+            <label for="startdate">Start Date</label>
+            <input type="date" class="form-control" id="startdate" name="startdate"><br>
+            <label for="enddate">End Date</label>
+            <input type="date" class="form-control" id="enddate" name="enddate">
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" id="entire" type="checkbox" value=""> Select
+              to search entire record</label>
+          </div><br>
+          <input type="submit" class="btn btn-success" value="Search!" style="width:100%;">
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+{% block javascript %}
+  <script type="text/javascript">
+    window.onload = $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+
+    $('#entire').on('click', function(){
+      if ($("#entire").is(':checked')){
+        $('#startdate').val("{{defaultstart|date:"Y-m-d"}}");
+        $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+      }
+    });
+  </script>
+{% endblock javascript %}

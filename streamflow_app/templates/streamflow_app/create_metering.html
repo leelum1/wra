@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block head %}
+  <title>Add Metering</title>
+  <style media="screen">
+    .form{
+      border: 1px solid black;
+      border-radius:10px;
+      background-color: white;
+    }
+
+    .datefield{
+      margin-bottom: 20px;
+      border-radius: 5px;
+      padding: 5px;
+      height:40px;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'streamflow_app:metering_detail' pk=code %}">{{ name }}</a>
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'streamflow_app:metering_list' %}">Metering List</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>{{ name }} River - Add Metering</h1>
+    <div class="row">
+      <div class="col-md-6 col-sm-12">
+        <p>Meterings should be input into the database as soon as possible after
+          the data collection. Technicians input the raw metering data into a spreadsheet
+          that automatically calculates the discharge.</p>
+        <p>To add a metering into the database, fill out the data input fields.
+          Currently, you cannot input more than one metering on this page. For bulk
+          uploads, contact the database administrator.</p>
+        <p>If a mistake is made in the form it cannot be undone. You must contact
+          the database administrator to edit or delete any invalid data. </p>
+      </div>
+      <div class="col-md-6 col-sm-12">
+        <div class="container form">
+          <h2>Data Input</h2>
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              {{ form.date.label_tag }}<br>
+              {% render_field form.date class='datefield' %}<br>
+              {{ form.discharge.label_tag }}
+              {% render_field form.discharge class="form-control" %}
+              <small class="form-text text-muted">
+                {{ form.discharge.help_text }}
+              </small>
+            </div>
+            <div style="text-align:center;">
+              <input type="submit" disabled class="btn btn-success" style="width:50%;" value="Save">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

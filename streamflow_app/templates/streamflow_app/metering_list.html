@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block head %}
+  <meta name="description" content="Current metering sites in Trinidad and Tobago">
+  <title>Metering Sites</title>
+  <style media="screen">
+    #copy{
+      color: blue;
+      font-size: 12px;
+    }
+
+    #copy:hover{
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    td > a{
+      text-decoration: none;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">SOP Database</a>
+  {% if user.is_management %}
+    <a class="sidebar-button" href="{% url 'admin:index' %}">Add or Edit Site</a>
+  {% endif %}
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Metering Sites</h1>
+    <p>This is a list of the current metering locations. Click on any to view more
+      details and access data.</p>
+    <input id="searchInput" class="form-control" type="text" name="name" placeholder="Search gauges here">
+
+    <div style="text-align:right;">
+      <a id="copy" onclick="CopyStuff(document.getElementById('meteringtable'));">Copy table</a>
+    </div>
+    <table class="table-striped" id="meteringtable">
+      <thead>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Category</th>
+        <th>Watershed</th>
+      </thead>
+      <tbody>
+        {% for metering in meterings %}
+            <tr>
+              <td><a href="{% url 'streamflow_app:metering_detail' pk=metering.code %}">{{ metering.name }}</a></td>
+              <td><a href="{% url 'streamflow_app:metering_detail' pk=metering.code %}">{{ metering.code }}</a></td>
+              <td><a href="{% url 'streamflow_app:metering_detail' pk=metering.code %}">{{ metering.category }}</a></td>
+              <td><a href="{% url 'streamflow_app:metering_detail' pk=metering.code %}">{{ metering.watershed }}</a></td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}
+
+{% block javascript %}
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#meteringtable').DataTable({
+        "order": [ 0, 'asc' ],
+        "paging": false,
+        "searching": false,
+        "info": false,
+      });
+      $('#searchInput').keyup(function(){
+        results.search($(this).val()).draw() ;
+      })
+    });
+  </script>
+{% endblock javascript %}

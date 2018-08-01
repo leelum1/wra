@@ -1,0 +1,32 @@
+/*Map*/
+#map{
+  height: 300px;
+  width: 100%;
+  top: 0;
+  z-index: 10;
+  border: 1px solid black;
+}
+
+.mapboxgl-popup-content {
+  min-height:100px;
+  min-width: 300px;
+  border: 1px solid black;
+}
+
+td{
+  height: 15px;
+}
+
+/*h6 used in popups*/
+h6{
+  text-align:center;
+  text-decoration: underline;
+  width: 100%;
+}
+
+td > a{
+  padding: 8px;
+  color: white;
+  border-radius: 5px;
+  background-color: blue;
+}

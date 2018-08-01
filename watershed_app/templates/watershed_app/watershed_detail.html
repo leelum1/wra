@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% load md2 %}
+{% block head %}
+  <title>{{ watershed.name }} Watershed, Trinidad and Tobago</title>
+  <meta name="description" content="A description of the {{ watershed.name }} watershed
+  in Trinidad and Tobago and its data">
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.css' rel='stylesheet' />
+  <style media="screen">
+    a{
+      text-decoration: none;
+    }
+
+    h4{
+      margin-top: 20px;
+    }
+
+    #map{
+      height: 400px;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+      border: 1px solid black;
+    }
+
+    table{
+      margin-bottom: 20px;
+    }
+
+    img{
+      border:1px solid black;
+      height:200px;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'watershed_app:watersheds' %}">Watershed Home</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>{{ watershed.name }} Watershed</h1>
+
+    <div class="row">
+      <div class="col-lg-4 col-md-5 col-sm-12">
+          <p><strong>Hydrometric Area:</strong> {{ watershed.hydrometric_area }} - {{ watershed.get_hydrometric_area_display }}</p>
+          <p><strong>Area:</strong> {{ watershed.area|floatformat:2 }} km<sup>2</sup></p>
+          <p>Zoom into the non-purple area to view the watershed. Rainfall gauges (red) and
+            streamflow intakes (blue) appear when you zoom in. </p>
+      </div>
+      <div class="col-lg-8 col-md-7">
+          <div id="map"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <h4>Description</h4>
+    {% if watershed.description %}
+      {{ watershed.description|markdown }}
+    {% else %}
+      <p>There will be a description of the watershed here.</p>
+    {% endif %}
+  </div>
+
+  <div class="container-fluid">
+    <h4>Monitoring Stations</h4>
+    <h5>Rain Gauges</h5>
+    {% if rainfall %}
+      {% if rainfall.count == 1 %}
+        <p>There is {{ rainfall.count }} rainfall gauge in this watershed.</p>
+      {% else %}
+        <p>There are {{ rainfall.count }} rainfall gauges in this watershed.</p>
+      {% endif %}
+      <table class="table-striped" id="gaugelist">
+        <thead>
+          <th>Name</th>
+          <th>Code</th>
+          <th>Category</th>
+        </thead>
+        <tbody>
+          {% for gauge in rainfall %}
+            {% if gauge.category == "Pot" %}
+              <tr>
+                <td><a href="{% url 'data_app:gaugedetail' pk=gauge.code %}">{{ gauge.name }}</a></td>
+                <td><a href="{% url 'data_app:gaugedetail' pk=gauge.code %}">{{ gauge.code }}</a></td>
+                <td>{{ gauge.category }}</td>
+              </tr>
+            {% else %}
+              <tr>
+                <td>{{ gauge.name }}</td>
+                <td>{{ gauge.code }}</td>
+                <td>{{ gauge.category }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>There are no rain gauges to show.</p>
+    {% endif %}
+
+    <h5 style="margin-top:40px;">Streamflow</h5>
+    {% if fuess %}
+      <p>There are {{ fuess.count }} streamflow stations.</p>
+      <table>
+        <thead>
+          <th>Code</th>
+          <th>Name</th>
+        </thead>
+        <tbody>
+          {% for gauge in fuess %}
+            <tr>
+              <td>{{ gauge.code }}</td>
+              <td>{{ gauge.river }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>There are no streamflow gauges to show.</p>
+    {% endif %}
+    {% if meterings %}
+      {% if meterings.count == 1 %}
+        <p>There is one metering site.</p>
+      {% else %}
+        <p>There are {{ meterings.count|apnumber }} metering sites.</p>
+      {% endif %}
+      <table class="table-striped" id="meteringtable">
+        <thead>
+          <th>Name</th>
+          <th>Code</th>
+          <th>Category</th>
+        </thead>
+        <tbody>
+          {% for metering in meterings %}
+              <tr>
+                <td><a href="{% url 'streamflow_app:metering_detail' pk=metering.code %}">{{ metering.name }}</a></td>
+                <td><a href="{% url 'streamflow_app:metering_detail' pk=metering.code %}">{{ metering.code }}</a></td>
+                <td><a href="{% url 'streamflow_app:metering_detail' pk=metering.code %}">{{ metering.category }}</a></td>
+              </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>There are no metering sites in this watershed.</p>
+    {% endif %}
+
+    <h5 style="margin-top:40px;">Groundwater</h5>
+    {% if wells %}
+      <p>There are {{ wells.count|pluralize }} wells in this watershed.</p>
+    {% else %}
+      <p>There are no wells to show. Nothing will be here until I add a watershed
+        field to the Wells database and also when I get a wells shapefile</p>
+    {% endif %}
+  </div>
+
+  <div class="container-fluid">
+    <h4>Library material</h4>
+    {% if library %}
+      <p>The following items can be requested from the WRA libarian.</p>
+      <div class="row" style="text-align:center; margin-top:30px;">
+        {% for book in library %}
+        <div class="col" style="text-align:center;">
+          <img {% if book.bookcover %} src="{{ book.bookcover.url }}" {% else %} src="{% static 'images/no_preview.png' %}"{% endif %} alt="Book Cover">
+          <p style="text-align:center; margin-top:5px;"><strong>{{ book.title|truncatewords:10 }}</strong>
+          <br><em>{{ book.author }}</em></p>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>There are no items in the library about this watershed.</p>
+    {% endif %}
+  </div>
+{% endblock content %}
+{% block javascript %}
+  <script type="text/javascript">
+    function getFeatures() { //https://github.com/mapbox/mapbox-gl-js/issues/4222#issuecomment-279446075
+      if (!map.loaded()) { return }
+      findWatershed();
+      map.off('render', getFeatures);
+    };
+
+    function findWatershed() {
+      var watershed = "{{watershed.name}}";
+      map.setFilter('watersheds-highlighted', ['!=', 'Name', watershed]);
+
+      var features = map.queryRenderedFeatures({ layers: ['Watersheds'] });
+      features.forEach(function(feature){
+        var prop = feature.properties;
+        if(prop.Name == watershed){
+          map.flyTo({center: [prop.CentroidX, prop.CentroidY], zoom: 10});
+        }
+      });
+    };
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoibGVlbHVtMSIsImEiOiJjamFzNHM0cmo0bmduMnFwbHh0MXNweW5jIn0.1fUr70BuY4Kk4BERLB5Pkg';
+
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/basic-v9',
+      center: [-61.5, 10.5],
+      zoom: 5
+    });
+
+    map.setMaxBounds([[-62.2, 9.8],[-60.3, 11.4]]);
+
+    //Scale
+    var scale = new mapboxgl.ScaleControl({
+        maxWidth: 80,
+        unit: 'metric'
+    });
+    map.addControl(scale);
+
+    map.on('load', function() {
+      map.addSource('Rainfall-3f50n1', {
+            type: 'vector',
+            url: 'mapbox://leelum1.8zrmbkd9'
+        });
+
+      map.addLayer({
+          'id': 'Rainfall',
+          'type': 'circle',
+          'source': 'Rainfall-3f50n1',
+          'source-layer': 'Rainfall-3f50n1',
+          'minzoom': 10,
+          'layout': {
+              'visibility': 'visible',
+          },
+          'paint': {
+            'circle-radius': 5,
+            'circle-color': 'red'
+          }
+      });
+
+      map.addSource('Intakes-98jk1d', {
+            type: 'vector',
+            url: 'mapbox://leelum1.5ibafbjm'
+        });
+
+      map.addLayer({
+          'id': 'Intakes',
+          'type': 'circle',
+          'source': 'Intakes-98jk1d',
+          'source-layer': 'Intakes-98jk1d',
+          'minzoom': 10,
+          'layout': {
+              'visibility': 'visible',
+          },
+          'paint': {
+            'circle-radius': 5,
+            'circle-color': 'blue'
+          }
+        });
+
+      map.addSource('Watersheds-3dt1kb', {
+            type: 'vector',
+            url: 'mapbox://leelum1.26t26vhq'
+        });
+
+      map.addLayer({
+          'id': 'Watersheds',
+          'type': 'fill',
+          'source': 'Watersheds-3dt1kb',
+          'source-layer': 'Watersheds-3dt1kb',
+          'layout': {
+              'visibility': 'visible',
+          },
+          'paint': {
+              'fill-color': 'rgba(0, 0, 0, 0)',
+              'fill-outline-color': 'rgba(200, 100, 240, 1)'
+          }
+      });
+
+      map.addLayer({
+        "id": "watersheds-highlighted",
+        "type": "fill",
+        'source': 'Watersheds-3dt1kb',
+        'source-layer': 'Watersheds-3dt1kb',
+        "paint": {
+            "fill-outline-color": "#484896",
+            "fill-color": "#6e599f",
+            "fill-opacity": 0.75
+        },
+        "filter": ["in", "NAME", ""]
+      });
+
+      var watershed = "{{watershed.name}}";
+      map.setFilter('watersheds-highlighted', ['!=', 'Name', watershed]);
+      map.on('render', getFeatures);
+    });
+
+    // Change the cursor to a pointer.
+    map.on('mouseenter', 'Rainfall', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a cursor.
+    map.on('mouseleave', 'Rainfall', function () {
+        map.getCanvas().style.cursor = '';
+    });
+
+    // Change the cursor to a pointer.
+    map.on('mouseenter', 'Intakes', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a cursor.
+    map.on('mouseleave', 'Intakes', function () {
+        map.getCanvas().style.cursor = '';
+    });
+
+    map.on('click', 'Rainfall', function (e) {
+      var coordinates = e.features[0].geometry.coordinates.slice();
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      };
+      var code = e.features[0].properties.Number.replace(":", ".");
+      var url_mask = "{% url 'data_app:gaugedetail' pk=1.1 %}".replace(/1.1/, code);
+
+      new mapboxgl.Popup().setLngLat(coordinates)
+          .setHTML('<h6>' + e.features[0].properties.Name + ' Pot Gauge</h6>\
+          <table><tr><td>Code:</td><td>' + e.features[0].properties.Number + '</td></tr>\
+          <tr><td>Watershed:</td><td>' + e.features[0].properties.Watershed + '</td></tr>\
+          <tr><td>Long:</td><td>' + e.lngLat.lng.toFixed(6) + '</td></tr>\
+          <tr><td>Lat:</td><td>' + e.lngLat.lat.toFixed(6) + '</td></tr>\
+          <tr><td colspan=2 style="text-align:center; height:40px;"><a target=__blank href=' + url_mask + '>Navigate to Data Query</a></td></tr></table>')
+          .addTo(map);
+      });
+
+      map.on('click', 'Intakes', function (e) {
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        };
+        var code = e.features[0].properties.Code;
+        var url_mask = "{% url 'streamflow_app:metering_detail' pk=2.4 %}".replace(/2.4/, code);
+        new mapboxgl.Popup().setLngLat(coordinates)
+            .setHTML('<h6>' + e.features[0].properties.Name + ' Intake</h6>\
+            <table><tr><td>Code:</td><td>' + e.features[0].properties.Code + '</td></tr>\
+            <tr><td>Watershed:</td><td>' + e.features[0].properties.Watershed + '</td></tr>\
+            <tr><td>Long:</td><td>' + e.lngLat.lng.toFixed(6) + '</td></tr>\
+            <tr><td>Lat:</td><td>' + e.lngLat.lat.toFixed(6) + '</td></tr>\
+            <tr><td colspan=2 style="text-align:center; height:40px;"><a target=__blank href=' + url_mask + '>Navigate to Data Query Page</a></td></tr></table>')
+            .addTo(map);
+      });
+  </script>
+{% endblock javascript %}

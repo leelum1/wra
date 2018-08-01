@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block head %}
+  <meta name="description" content="Intensity-Duration-Frequecy Curves for {{ name }} rainfall gauge">
+  <title>IDF Curves for {{ name }}</title>
+  <link rel="stylesheet" href="{% static 'css/graph.css' %}">
+  <style media="screen">
+
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data_app:gaugedetail' pk=code %}">Back to {{ name }}</a>
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'data_app:gaugelist' %}">Gauge List</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>{{name}}</h1>
+
+    <h4>Intensity-Duration-Frequency Curves</h4>
+    <p>Generated from records between {{startyear}} and {{endyear}}. Rainfall is
+      given in mm/hr. If the graph does not load, try refreshing the page. To view
+      the dataset used to generate the curves, perform a query for annual data. The
+      maximum for each year will be displayed. If you prefer to create your own
+      graphs, simply copy the data from the tables into your own spreadsheet or
+      graphing application.</p>
+
+    <div class="container-fluid" id="idfcontainer" style="text-align:center;">
+      <svg id="idfsvg" style="font: 10px sans-serif;"></svg>
+    </div>
+
+    <div style="text-align:right;">
+      <a id="copy" onclick="CopyStuff(document.getElementById('idftable'));">Copy table</a>
+    </div>
+    <table id="idftable">
+      <thead>
+        <th>Duration (min)</th>
+        <th>2 year</th>
+        <th>5 year</th>
+        <th>10 year</th>
+        <th>25 year</th>
+        <th>50 year</th>
+        <th>100 year</th>
+      </thead>
+      <tbody>
+        {% for key,value in IDF.items %}
+          <tr>
+            <td>{{ key }}</td>
+            <td style="text-align:right">{{ value.0 }}</td>
+            <td style="text-align:right">{{ value.1 }}</td>
+            <td style="text-align:right">{{ value.2 }}</td>
+            <td style="text-align:right">{{ value.3 }}</td>
+            <td style="text-align:right">{{ value.4 }}</td>
+            <td style="text-align:right">{{ value.5 }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="container-fluid">
+    <h4>Depth-Duration-Frequency Curves</h4>
+    <p>The Depth-Duration-Frequency Curves are slightly easier to understand.</p>
+
+    <div class="container-fluid" id="ddfcontainer" style="text-align:center;">
+      <svg id='ddfsvg' style="font: 10px sans-serif;"></svg>
+    </div>
+
+    <div style="text-align:right;">
+      <a id="copy" onclick="CopyStuff(document.getElementById('ddftable'));">Copy table</a>
+    </div>
+    <table id="ddftable">
+      <thead>
+        <th>Duration (min)</th>
+        <th>2 year</th>
+        <th>5 year</th>
+        <th>10 year</th>
+        <th>25 year</th>
+        <th>50 year</th>
+        <th>100 year</th>
+      </thead>
+      <tbody>
+        {% for key,value in DDF.items %}
+          <tr>
+            <td>{{ key }}</td>
+            <td style="text-align:right">{{ value.0 }}</td>
+            <td style="text-align:right">{{ value.1 }}</td>
+            <td style="text-align:right">{{ value.2 }}</td>
+            <td style="text-align:right">{{ value.3 }}</td>
+            <td style="text-align:right">{{ value.4 }}</td>
+            <td style="text-align:right">{{ value.5 }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock content %}
+{% block javascript %}
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src={% static 'js/legend.js' %}></script>
+  <script type="text/javascript">
+    var graphtitle = "{{ name }}";
+    var idfjsonObject = JSON.parse('{{ json_idf | escapejs }}');
+    var ddfjsonObject = JSON.parse('{{ json_ddf | escapejs }}');
+  </script>
+  <script src="{% static 'js/IDF.js' %}"></script>
+  <script src="{% static 'js/DDF.js' %}"></script>
+{% endblock %}

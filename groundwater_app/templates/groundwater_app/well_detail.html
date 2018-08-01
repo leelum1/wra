@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block head %}
+  <meta name="description" content="Details and data for {{ well.name }} observation well">
+  <title>{{ well.name }} well detail</title>
+  <link rel="stylesheet" href="{% static 'css/graph.css' %}">
+  <style media="screen">
+
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'groundwater_app:groundwater' %}">Well List</a>
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  {% if user.is_management %}
+    <a class="sidebar-button" href="{% url 'admin:index' %}">Add or Edit Well</a>
+  {% endif %}
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>{{ well.name }}</h1>
+    <p>{{ well.description }}</p>
+    <p>Note that since I don't have access to any groundwater data, you will not
+      be able to query data. Also the graph below has nothing to show and so will
+      just be white square. To be updated when I get data. A map is to also go on
+      this page...when I get the coordinates of the wells.</p>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-7 col-sm-12">
+        <h4>Quick Stats</h4>
+        <table>
+          <tr>
+            <td style="width:30%;">Index No</td>
+            <td style="width:70%;">{{ well.index_no }}</td>
+          </tr>
+          <tr>
+            <td>WellField</td>
+            <td>{{ well.wellfield }}</td>
+          </tr>
+          <tr>
+            <td>Benchmark</td>
+            <td>{{ well.benchmark }} above M.S.L?</td>
+          </tr>
+          <tr>
+            <td>Safe Yield</td>
+            <td>{{ well.safe_yield }}</td>
+          </tr>
+          <tr>
+            <td>Northing</td>
+            <td>{{ well.northing }}</td>
+          </tr>
+          <tr>
+            <td>Easting</td>
+            <td>{{ well.easting }}</td>
+          </tr>
+          <tr>
+            <td>Period</td>
+            <td>{{ defaultstart|date:"d M Y" }} to {{ defaultend|date:"d M Y" }}</td>
+          </tr>
+          <tr>
+            <td>Last Reading</td>
+            <td>{{ lastreading }} m. on {{ defaultend|date:"d M Y" }}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="col-md-5 col-sm-12">
+        <div class="container" style="background-color:white; border-radius:5px; padding:20px;">
+          <h4 style="text-align:center;">Data query</h4>
+
+          <form action="query" method="get">
+            <div class="form-group">
+              <label for="startdate">Start Date</label>
+              <input type="date" class="form-control" id="startdate" name="startdate"><br>
+              <label for="enddate">End Date</label>
+              <input type="date" class="form-control" id="enddate" name="enddate">
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" id="entire" type="checkbox" value=""> Select
+                to search entire record</label>
+            </div><br>
+            {# <input type="submit" class="btn btn-success" value="Search!" style="width:100%;">#}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid" id="wellgraph">
+    <h4>Well Readings</h4>
+    <p>The graph below shows the reduced level at {{ well.name }} for the past 12
+      months. Since well readings are taken once every month, the reduced levels
+      between the observation points are interpolated using a straight line. If
+      the graph does not show, try refreshing the page.</p>
+  </div>
+
+  <div class="container-fluid" style="text-align:center;">
+    <svg style="font: 10px sans-serif;"></svg>
+  </div>
+
+{% endblock content %}
+{% block javascript %}
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript">
+    var graphtitle = "{{ well.name }}";
+    var welljson = JSON.parse('{{ welljson | escapejs }}');
+  </script>
+  <script src="{% static 'js/well.js' %}"></script>
+  <script type="text/javascript">
+    window.onload = $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+    window.onload = $('#startdate').val("{{defaultstart|date:"Y-m-d"}}");
+
+    $('#entire').on('click', function(){
+      if ($("#entire").is(':checked')){
+        $('#startdate').val("{{defaultstart|date:"Y-m-d"}}");
+        $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+      }
+    });
+  </script>
+{% endblock javascript %}

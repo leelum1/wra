@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}
+  <meta name="description" content="Hollis reservoir data and description">
+  <title>Hollis Reservoir</title>
+{% endblock title %}
+{% block head %}
+  <style media="screen">
+    .carousel-item{
+      text-align: center;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'reservoir_app:reservoir' %}">Reservoir Home</a>
+  <a class="sidebar-button" href="{% url 'library_app:projectionstheory' %}">Reservoir SOP</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container">
+    <h1>Hollis Reservoir</h1>
+  </div>
+
+  <div class="row container">
+    <div class="col-md-7 col-sm-12">
+        <p>The Hollis reservoir was created by damming the Quare river, and was commissioned
+          in 1936 by Sir Claude Hollis, a past Governor of Trinidad and Tobago, whom
+          it was named after. It is fed by seven tributaries that flow directly into the resevoir:
+          Waterfall, Crayfish, Inner Estate, Outer Estate, Mapapie, I can't remember the rest.</p>
+        <p>The blue intake tower that pulls water from the reservoir to send to the treatment
+          plant below is accessible over a bridge. A nonfunctional Fuess guage is housed
+          on the bridge, and was historically used to continuously monitor the lake level.
+          Nowadays, a simple gauge board, which is painted onto the side of the intake tower,
+          is read by the reservoir operators.</p>
+        <p>Several climatic stations are located on the western side of the dam. In
+          addition, there is a rain gauge located across the lake near to the Crayfish
+          tributary. Employees travel to the gauge via a boat to perform maintenance.</p>
+        <p>The ogee spillway at the south-western tip of the reservoir spills at a height
+          of 620 ft. The water flows into a circular basin, which is a form of a labyrinth
+          spillway, used to both dissipate energy and discharge as much water as possible.
+          The water from the spillway is routed back to the Quare River.</p>
+      <div class="container">
+        <table>
+          <tr>
+            <td>Spillway Elevation</td>
+            <td>620 ft</td>
+          </tr>
+          <tr>
+            <td>Bottom Draw Off</td>
+            <td>575 ft</td>
+          </tr>
+          <tr>
+            <td>Maximum Depth</td>
+            <td>45 ft</td>
+          </tr>
+          <tr>
+            <td>Maximum Production</td>
+            <td>8.4 MGD</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-5 col-sm-12">
+      <div class="container" style="background-color:white; border-radius:5px; padding:20px; margin:10px;">
+        <h4 style="text-align:center;">Data query</h4>
+
+        <form method="get">
+          <div class="form-group">
+            <label for="startdate">Start Date</label>
+            <input type="date" class="form-control" id="startdate" name="startdate"><br>
+            <label for="enddate">End Date</label>
+            <input type="date" class="form-control" id="enddate" name="enddate">
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" id="entire" type="checkbox" value=""> Select
+              to search entire record</label>
+          </div><br>
+          <input type="submit" class="btn btn-success" value="Search!" style="width:100%;">
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+{% block javascript %}
+  <script type="text/javascript">
+    window.onload = $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+
+    $('#entire').on('click', function(){
+      if ($("#entire").is(':checked')){
+        $('#startdate').val("{{defaultstart|date:"Y-m-d"}}");
+        $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+      }
+    });
+  </script>
+{% endblock javascript %}

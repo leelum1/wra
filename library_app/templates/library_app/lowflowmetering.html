@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block head %}
+  <title>River Metering</title>
+  <meta name="description" content="">
+  <style media="screen">
+    .sidebar{
+      overflow-y: scroll;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">SOP Home</a>
+  <a class="sidebar-button" href="#Equipment">Equipment</a>
+  <a class="sidebar-button" href="#SiteSelection">Site Selection</a>
+  <a class="sidebar-button" href="#Verticals">Verticals Selection</a>
+  <a class="sidebar-button" href="#Points">Points Selection</a>
+  <a class="sidebar-button" href="#MeterAssembly">Meter Assembly</a>
+  <a class="sidebar-button" href="#StationNotes">Station Notes</a>
+  <a class="sidebar-button" href="#Metering">Current Metering</a>
+{% endblock %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Low Flow Current Metering</h1>
+    <p>Stream flow, or discharge, is the volume of water that moves over a
+      designated point over a fixed period of time. It is often expressed as
+      cubic meters per second (m3/sec). It is ideal for the flow at the intakes
+      be measured once every month. This is especially crucial during the dry
+      season. Metering data is used in the development of recession and
+      reliability curves, which are used to determine a sustainable rate of
+      water abstraction from a river. Low current meterings (where the depth of
+      water is less than 5m) are commonly performed by the SWPS, although high
+      flow current meterings are performed occasionally (for flood events, etc).
+      This section describes the procedure for a low flow current metering.</p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id='Equipment'>Equipment</h4>
+    <ul>
+      <li>Staff gauge (IS 4080-1994)</li>
+      <li>Measuring tape</li>
+      <li>Current meter, cup-type, with transportation case and both travelling and working pins)</li>
+      <li>Electronic display (ensure working battery) and connecting wire</li>
+      <li>Screwdriver (Small flathead)</li>
+      <li>Personal Protective Equipment (chest/thigh waders, gloves, etc.)</li>
+      <li>Discharge Measurement Form (including clipboard and pen)</li>
+      <li>Cutlass (used to clear brush which may be overgrown at a section)</li>
+      <li>At least 2 technicians</li>
+    </ul>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="Site Selection">Site Selection</h4>
+    <p>Ensure that the site at which to perform the current metering comes as close
+      as possible to the following ideal situation</p>
+    <ul>
+      <li>A straight reach</li>
+      <li>Stable stream bed which is free of large rocks and other obstructions
+        which create turbulence</li>
+      <li>A flat bed profile to eliminate vertical components of velocity</li>
+    </ul>
+    <p>If the sites’ cross section has to be modified to achieve the more ideal
+      situation (sure as moving rocks or clearing bush), be sure to allow enough
+      time for the flow to stabilise before taking measurements. The cross section
+      should not be changed during the metering since this would change the flow
+      profile in the cross-section.</p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="Verticals">Selection of Vertical Interval and the Number of Verticals</h4>
+    <p>Select the intervals and number of verticals from the table below.</p>
+    <table class="table">
+      <thead>
+        <th>Channel Width (w)</th>
+        <th>Number of Verticals</th>
+        <th>Spacing (m)</th>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0 < w < 0.5</td>
+          <td>3 to 4</td>
+          <td>0.1</td>
+        </tr>
+        <tr>
+          <td>0.5 ≤ w < 1</td>
+          <td>4 to 5</td>
+          <td>0.2</td>
+        </tr>
+        <tr>
+          <td>1 ≤ w < 3</td>
+          <td>5 to 8</td>
+          <td>0.3</td>
+        </tr>
+        <tr>
+          <td>3 ≤ w < 5</td>
+          <td>8 to 10</td>
+          <td>0.4</td>
+        </tr>
+        <tr>
+          <td>5 ≤ w < 10</td>
+          <td>10 to 20</td>
+          <td>0.5</td>
+        </tr>
+        <tr>
+          <td>w > 10</td>
+          <td>20</td>
+          <td>1.0</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Adjust the number of verticals according to the following rules:</p>
+    <ul>
+      <li>Add two additional verticals close to each of the two water’s edges (banks).</li>
+      <li>The difference in water depth between two adjacent verticals should not exceed 50% of the smaller.</li>
+      <li>The largest flow through any one panel shall not be greater than about ten (10) percent of the total discharge.</li>
+    </ul>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="Points">Selection of Number of points in the Vertical</h4>
+    <p>Since low flow meterings are most commonly performed, the average velocity
+      in the vertical is assumed to be at the 0.6 depth. If the depth is greater
+      than 0.5m, the 0.2 and 0.8 depth velocities need to be measured. </p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="Meter Assembly">Meter Assembly</h4>
+    <p>Ideally, the current meter should be inspected before and after every field
+      trip to ensure that everything is working properly. To set up the current
+      meter, follow these steps:</p>
+    <ol>
+      <li>Remove the meter from its casing by unscrewing it. Be sure to handle
+        the meter with care at all times since it is very fragile and difficult to
+        mend.</li>
+      <li>Remove the travelling pin by screwing it and replace it with the working
+        pin. Note that the working pin has a beveled edge that should be facing
+        the screw. The purpose of the travelling pin is reduce the motion of the
+        meter when not in use. </li>
+      <li>Attach the meter to the staff gauge, ensuring that the meter can spin
+        horizontally. </li>
+      <li>Attach the wire to the meter and the other end of the wire to the display.
+        The display has pins that need to be lined up when connecting the wire.</li>
+      <li>Ensure that the meter is spinning freely. You can do this by gently
+        blowing on the meter. It should continue spinning for at least three
+        seconds after you stop blowing on it. If you observe that the meter is not
+        spinning freely, you can try the following options:
+        <ol type="a">
+          <li>Check for obstructions in the shaft and carefully remove any. Sometimes
+            items such as hair, algae, straw, etc. get stuck in the meter when out
+            in the field</li>
+          <li>Apply oil to the shaft of the meter</li>
+          <li>Change the distance of the working pin in the meter. Sometimes leaving
+            the pin a few millimeters out instead of all the way in decreases the
+            friction between the meter and the wire. </li>
+        </ol>
+      </li>
+      <li>Test that the display is reading correctly. Do this by first turning
+        the display ON, and pressing the 625 m/s button ONCE. This setting reads
+        the instantaneous speed of the meter. Performing the actual current metering
+        will require the average speed of the current meter. Gently blow on the
+        meter and check to the see if the display is showing a realistic value.
+        If not, check the following:
+        <ol type="a">
+          <li>The battery may need to be changed. The display will usually indicate
+            a low battery with a BATT warning</li>
+          <li>The wire may not be connected properly. Ensure that the wire is
+            fully secured on both ends</li>
+          <li>The wire may be faulty. The end of the wire that connects to the wire
+            contains fragile sensors that can be easily damaged.</li>
+        </ol>
+      </li>
+    </ol>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="Station Notes">Station Notes</h4>
+    <a class="btn btn-primary" target="_blank" href="{% static 'excel/metering_form.pdf' %}">Download Metering Form</a>
+    <p>Before measurements are taken, record the following information on the gauging
+      form:</p>
+    <ul>
+      <li>Name of the river, date and time</li>
+      <li>Location of the discharge measurement site - whether at the standard
+        section or at an alternative section, the distance upstream or downstream
+        from the reference staff gauges in the case of wading gauging</li>
+      <li>Names of personnel carrying out the gauging.</li>
+      <li>Other pertinent information affecting the control conditions or which
+        might be expected to affect the stage-discharge relation (flow disturbance
+        caused by rocks, bush, evidence of sub-surface flow, etc)</li>
+    </ul>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="Metering">Current Meter Measurements</h4>
+    <p>Perform the current metering by following these steps:</p>
+    <ol>
+      <li>Stretch the measuring tape across the river, perpendicular to the direction
+        of flow. The tape can be held by two people, or secured using tree branches
+        if available, ensuring that it is as taut as possible. </li>
+      <li>Write down the distance at water’s edge, and measure the depth using
+        the staff gauge. The depth may be zero.</li>
+      <li>At the first chosen vertical, stand an arm’s length downstream of the
+        current meter facing upstream. Hold the wading rod vertically throughout
+        the measurement and the meter parallel to the direction of flow. In very
+        narrow channels, avoid standing in the water if your feet and legs would
+        occupy a considerable percentage of the cross section.</li>
+      <li>Write down the distance of the vertical and measure the depth using
+        the staff gauge.</li>
+      <li>Lower the meter to the appropriate depth in the vertical (0.2, 0.6, or
+        0.8 depth), and note which observed depth the speed is being measured on
+        the form. </li>
+      <li>Ensure that the display is ON and press the reset button, followed by
+        pressing the 625 m/s button twice. This setting measures the average speed
+        of the meter.</li>
+      <li>The display should show a reading after 40 seconds. If not, make the
+        same checks as described in the Meter Assembly section.</li>
+      <li>Move to the next vertical and repeat, until the entire cross section
+        has been traversed.</li>
+      <li>Clean and disassemble the current meter, and note the time and any final
+        observations of the area. Ensure that the display has been turned off, and
+        the area is left better than was found.</li>
+    </ol>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="bucket">Bucket Test</h4>
+    <p>The bucket test is used to measure streamflow in areas where a metering is
+      not possible. The following equipment is required.</p>
+    <ol>
+      <li>Bucket with known volume</li>
+      <li>Rope</li>
+      <li>Stopwatch</li>
+      <li>Discharge Form</li>
+    </ol>
+    <p>Have a strong, stable footing and comfortable grip on the bucket before the
+      bucket test is performed. Simultaneously put the bucket under the flow of
+      water and start the stopwatch. Stop the stopwatch when the bucket is
+      completely full. Repeat the test at least three times. Divide the volume of
+      the bucket by the average time to obtain the discharge.</p>
+  </div>
+{% endblock content %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block head %}
+  <meta name="description" content="Search the library of the Water Resources Agency of Trinidad and Tobago">
+  <title>Water Resources Library, Trinidad and Tobago</title>
+  <style media="screen">
+    .butnav{
+      width: 200px;
+      border-radius: 0;
+      height: 80px;
+      white-space:normal;
+      padding-top:20px;
+      padding-bottom:20px;
+    }
+
+    img{
+      border:1px solid black;
+      height:200px;
+    }
+
+    a{
+      text-decoration: none;
+    }
+  </style>
+{% endblock head %}
+{% block body_block %}
+  <div class="container-fluid" style="padding-bottom:40px;">
+    <h1 class="display-4">The WRA Library</h1>
+    <p class="lead">The WRA hosts a number of articles such as research journals, data reports,
+      and science textbooks that are available for reference. Type below to search.
+      Leave blank to view all items. To request a book, contact the WRA librarian.
+    </p>
+
+    <form action="booklist" style="text-align:center;" method="get">
+      <div class="input-group mb-3">
+        <input class="form-control" type="text" name="book" placeholder="Search by title, author, type here">
+        <div class="input-group-append">
+          <input type="submit" class="btn btn-success" style="border-radius:0;" value="Search!">
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="container-fluid" style="background-color:white;">
+    <h2>Recent Additions</h2>
+    <p>Check below for the most recent additions to the WRA online library.</p>
+    <div class="row" style="text-align:center; margin-top:30px;">
+      {% for book in recent %}
+      <div class="col" style="text-align:center;">
+        <a href="{% url 'library_app:book-detail' pk=book.id %}">
+          <img {% if book.bookcover %} src="{{ book.bookcover.url }}" {% else %} src="{% static 'images/no_preview.png' %}"{% endif %} alt="Book Cover">
+          <p style="text-align:center; margin-top:5px;"><strong>{{ book.title|truncatewords:10 }}</strong>
+          <br><em>{{ book.author }}</em></p>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="container-fluid" style="text-align:center; padding:50px; min-height:300px;">
+    <h2>Standard Operating Procedures</h2>
+    <p style="text-align:center;">The WRA is in the processing of making all Standard Operating Procedures
+      (SOPs) available. Access the SOP home by clicking below!</p>
+    <a class="btn btn-primary" style="width:200px; margin-top:30px;" href="{% url 'library_app:sop' %}">SOP Home</a>
+  </div>
+
+{% endblock body_block %}

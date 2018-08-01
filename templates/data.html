@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block head %}
+  <meta name="description" content="Portal to access rainfall, streamflow, groundwater, and water quality data for Trinidad and Tobago">
+  <title>Water Resources Data, Trinidad and Tobago</title>
+  <style media="screen">
+    @media screen and (max-width: 991px) {
+        img{
+          display: none;
+        }
+
+        .rightdesc{
+          padding:20px;
+        }
+
+        #datanav{
+          display:none;
+        }
+    }
+    @media screen and (min-width: 992px) {
+        img{
+          display:block;
+        }
+
+        .rightdesc{
+          padding-top: 20px;
+          padding-right:80px;
+        }
+
+        #datanav{
+          display:flex;
+        }
+    }
+
+    a{
+      text-decoration: none;
+    }
+
+    .dataimg{
+      width:80%;
+      height: 300px;
+    }
+
+    .datatype{
+      padding: 0;
+    }
+
+    .btn-info{
+      width: 80%;
+      margin-top:20px;
+    }
+  </style>
+{% endblock head %}
+{% block body_block %}
+  <nav class="navbar navbar-expand-sm navbar-light bg-light" id="datanav">
+    <ul class="navbar-nav" style="position: relative; float: left; display: block; left: 50%; ">
+      <li class="nav-item" style="position: relative; float: left; display: block; right: 50%;">
+        <a class="nav-link" href="{% url 'map_app:map' %}">Map</a>
+      </li>
+      <li class="nav-item" style="position: relative; float: left; display: block; right: 50%;">
+        <a class="nav-link" href="{% url 'data_app:gaugelist' %}">Rainfall</a>
+      </li>
+      <li class="nav-item" style="position: relative; float: left; display: block; right: 50%;">
+        <a class="nav-link" href="{% url 'streamflow_app:metering_list' %}">Streamflow</a>
+      </li>
+      <li class="nav-item" style="position: relative; float: left; display: block; right: 50%;">
+        <a class="nav-link" href="{% url 'groundwater_app:groundwater' %}">Groundwater</a>
+      </li>
+      <li class="nav-item" style="position: relative; float: left; display: block; right: 50%;">
+        <a class="nav-link" href="{% url 'quality_app:quality' %}">Water Quality</a>
+      </li>
+      <li class="nav-item" style="position: relative; float: left; display: block; right: 50%;">
+        <a class="nav-link" href="{% url 'reservoir_app:reservoir' %}">Reservoirs</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container-fluid">
+    <h1 class="display-4">Data and Information</h1>
+    <p class="lead">Providing data and information are the core functionalities of
+      the WRA. Access all water resources data here by selecting the type of data
+      needed. If you are unsure where to start,
+      <a href="{% url 'map_app:map' %}">our interactive map</a> shows the layout
+      of the hydrological network. All data accessed on this website is subject to
+      <a href="{% url 'legal' %}">our terms and conditions.</a></p>
+  </div>
+
+  <div class="container-fluid datatype" style="background-color:white;">
+    <div class="row no-gutters">
+      <div class="col-lg-5 col-md-12">
+        <img class="dataimg" src="{% static 'images/data_rainfall.png' %}" alt="Groundwater field?">
+      </div>
+      <div class="col-lg-7 col-md-12">
+        <div class="rightdesc">
+          <h2>Rainfall</h2>
+          <p>The WRA uses {{ rain }} pot gauges to monitor rainfall throughout Trinidad
+              and Tobago. Click below view all currently active gauges.</p>
+          <div style="text-align:center;">
+            <a href="{% url 'data_app:gaugelist' %}" class="btn btn-info">Rainfall Gauges</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid datatype">
+    <div class="row no-gutters">
+      <div class="col-lg-5 col-md-12">
+        <img class="dataimg" src="{% static 'images/data_streamflow.png' %}" alt="Groundwater field?">
+      </div>
+      <div class="col-lg-7 col-md-12">
+        <div class="rightdesc">
+          <h2>Streamflow</h2>
+          <p>The WRA conducts streamflow meterings at ungauged locations across
+            the country in a effort to monitor disharge rates throughout the year.
+            These mostly occur at river intakes, where water is withdrawn to supply
+            the community. The WRA currently monitors {{ rivers }} locations.</p>
+          <div class="row">
+            <div class="col" style="text-align:center;">
+              <a class="btn btn-info" href="{% url 'streamflow_app:metering_list' %}">Current Meterings</a>
+            </div>
+            <div class="col" style="text-align:center;">
+              <a class="btn btn-secondary" href="{% url 'streamflow_app:fuess_list' %}" style="width:80%; margin-top:20px;">Fuess Gauges</a>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <div class="container-fluid datatype" style="background-color:white;">
+    <div class="row no-gutters">
+      <div class="col-lg-5 col-md-12">
+        <img class="dataimg" src="{% static 'images/data_groundwater.png' %}" alt="Groundwater field?">
+      </div>
+      <div class="col-lg-7 col-md-12">
+        <div class="rightdesc">
+          <h2>Groundwater</h2>
+          <p>The WRA has a network of {{ wells }} monitoring wells throughout the country,
+            which are regularly checked to monitor the water levels in the aquifers.</p>
+          <div style="text-align:center;">
+            <a href="{% url 'groundwater_app:groundwater' %}" class="btn btn-info">Groundwater</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid datatype">
+    <div class="row no-gutters">
+      <div class="col-lg-5 col-md-12">
+        <img class="dataimg" src="{% static 'images/data_quality.png' %}" alt="Groundwater field?">
+      </div>
+      <div class="col-lg-7 col-md-12">
+        <div class="rightdesc">
+          <h2>Water Quality</h2>
+          <p>Water quality testing site data from WRA and AARP</p>
+          <div style="text-align:center;">
+            <a href="{% url 'quality_app:quality' %}" class="btn btn-info">Water Quality</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid datatype" style="background-color:white;">
+    <div class="row no-gutters">
+      <div class="col-lg-5 col-md-12">
+        <img class="dataimg" src="{% static 'images/data_reservoir.png' %}" alt="Reservoir">
+      </div>
+      <div class="col-lg-7 col-md-12">
+        <div class="rightdesc">
+          <h2>Reservoirs</h2>
+          <p>The WRA guides the operations at the four major impooundment reservoirs
+            in Trinidad and Tobago: Caroni-Arena, Navet, Hollis, and Hillsborough.
+            Click here to see more details and current and historical data from the reservoirs.</p>
+          <div style="text-align:center;">
+            <a href="{% url 'reservoir_app:reservoir' %}" class="btn btn-info">Reservoirs</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock body_block %}

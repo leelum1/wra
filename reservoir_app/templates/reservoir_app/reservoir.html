@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}
+  <meta name="description" content="Major reservoirs in Trinidad and Tobago">
+  <title>Reservoirs</title>
+{% endblock title %}
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/graph.css' %}">
+  <style media="screen">
+    svg{
+       font: 10px sans-serif;
+    }
+
+    .btn-primary{
+      width:80%;
+      border-radius: 0;
+    }
+  </style>
+{% endblock head %}
+{% block body_block %}
+  <div class="container-fluid">
+    <h1>Reservoirs</h1>
+    <p>The Water Resources Agency guides the operations at the four major reservoirs
+      across Trinidad and Tobago. For rainfall records, please navigate to the rainfall
+      pages. The historical levels and production will be kept track of here.</p>
+  </div>
+
+  <div class="container-fluid">
+    <h4>Caroni-Arena</h4>
+    <div class="row">
+      <div id="caronidiv" class="col-md-7">
+        <svg id="caronisvg"></svg>
+      </div>
+      <div class="col-md-5">
+        <p>Description of current levels and projections</p>
+        <div style="text-align:center;">
+          <a class="btn btn-primary" href="{% url 'reservoir_app:caroni' %}">Caroni-Arena</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <h4>Navet</h4>
+    <div class="row">
+      <div id="navetdiv" class="col-md-7">
+        <svg id="navetsvg"></svg>
+      </div>
+      <div class="col-md-5">
+        <p>Description of current levels and projections</p>
+        <div style="text-align:center;">
+          <a class="btn btn-primary" href="{% url 'reservoir_app:navet' %}">Navet</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <h4>Hollis</h4>
+    <div class="row">
+      <div id="hollisdiv" class="col-md-7">
+        <svg id="hollissvg"></svg>
+      </div>
+      <div class="col-md-5">
+        <p>Description of current levels and projections</p>
+        <div style="text-align:center;">
+          <a class="btn btn-primary" href="{% url 'reservoir_app:hollis' %}">Hollis</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <h4>Hillsborough</h4>
+    <div class="row">
+      <div id="hillsboroughdiv" class="col-md-7">
+        <svg id="hillsboroughsvg"></svg>
+      </div>
+      <div class="col-md-5">
+        <p>Description of current levels and projections</p>
+        <div style="text-align:center;">
+          <a class="btn btn-primary" href="{% url 'reservoir_app:hillsborough' %}">Hillsborough</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock body_block %}
+{% block javascript %}
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script type="text/javascript">
+    var caroni = JSON.parse('{{ caroni | escapejs }}');
+    var navet = JSON.parse('{{ navet | escapejs }}');
+    var hollis = JSON.parse('{{ hollis | escapejs }}');
+    var hillsborough = JSON.parse('{{ hillsborough | escapejs }}');
+    console.log(hillsborough);
+  </script>
+  <script src="{% static 'js/caroni.js' %}"></script>
+  <script src="{% static 'js/navet.js' %}"></script>
+  <script src="{% static 'js/hollis.js' %}"></script>
+  <script src="{% static 'js/hillsborough.js' %}"></script>
+{% endblock javascript %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block head %}
+  <title>Rainfall Gauge Comparison</title>
+  <meta name="description" content="">
+  <style media="screen">
+    input{
+      margin-top: 20px;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data' %}" style="padding-bottom:20px; padding-top:20px; border-bottom:1px solid grey;">Data home</a>
+  <a class="sidebar-button" href="{% url 'data_app:gaugelist' %}">Rainfall Gauges</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">Rainfall SOPs</a>
+  <a class="sidebar-button" href="{% url 'data_app:compare' %}">Compare Gauges</a>
+  {% if user.is_operations %}
+    <a class="sidebar-button" href="{% url 'data_app:readers' %}">Readers</a>
+  {% endif %}
+  {% if user.is_management %}
+    <a class="sidebar-button" href="{% url 'admin:index' %}">Add or Edit Gauge</a>
+  {% endif %}
+
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Compare rainfall gauges</h1>
+    <p>Sometimes you want to compare rainfall. Only pot gauges here</p>
+
+    <form class="compare-form" action="{% url 'data_app:compare' %}" method="get">
+      <div class="row">
+        <div class="col">
+          <select class="form-control" name="gauge1">
+            {% for gauge in gauges %}
+              <option value="{{ gauge.name }}">{{ gauge.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col">
+          <select class="form-control" name="gauge2">
+            {% for gauge in gauges %}
+              <option value="{{ gauge.name }}">{{ gauge.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <input class="form-control" type="date" name="startdate" value="2003-12-31">
+        </div>
+        <div class="col">
+          {# <input class="form-control" type="date" name="enddate" value="2003-12-31">#}
+        </div>
+      </div>
+      <input class="btn btn-primary" type="submit" value="submit">
+    </form>
+  </div>
+
+  {% if gauge1 %}
+    <div class="container-fluid">
+      <div style="text-align:right;">
+        <a id="copy" onclick="CopyStuff(document.getElementById('table'));">Copy table</a>
+      </div>
+
+      <table class="table" id="table">
+        <thead>
+          <th>Date</th>
+          <th>{{ gauge1.name }}</th>
+          <th>{{ gauge2.name }}</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ date|date:"d M Y" }}</td>
+            <td>{{ record1.rainfall }}</td>
+            <td>{{ record2.rainfall }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endblock content %}
+{% block javascript %}
+
+{% endblock javascript %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block head %}
+  <meta name="description" content="Recession curves for {{ name }} metering site">
+  <title>Recession Curves</title>
+  <link rel="stylesheet" href="{% static 'css/graph.css' %}">
+  <style media="screen">
+
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'streamflow_app:metering_detail' pk=code %}">Back to {{ name }}</a>
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'streamflow_app:metering_list' %}">Metering List</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">Streamflow SOPs</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>{{ name }} River 150 Day Reliability</h1>
+    <p>Streamflow reliability is most commonly used in water availability
+      studies, where the minimum amount is needed to design plant capacity.
+      The curves generated are based on discharge measurements taken at the
+      same location over a long period.</p>
+    <p>In Trinidad and Tobago, the discharge at the end of the dry season
+      (end of May) is usually considered to be the worst case minimum flows.
+      In order to estimate flows for this date, recession curves are used to
+      extrapolate data taken from the previous months, assuming no major
+      input from rainfall.</p>
+    <p>Recession curves are used to extrapolate streamflow data in order to estimate
+      minimum flows.</p>
+  </div>
+
+  <div class="container-fluid" id="graph" style="text-align:center;">
+    <svg style="font: 10px sans-serif;"></svg>
+  </div>
+
+  <div class="container-fluid">
+    <h3 style="text-align:center;">Streamflow Reliability</h3>
+    <table style="width:80%;">
+      <tbody>
+        <tr>
+          <td>Reliability</td>
+          {% for flow in flows %}
+            <td>{{ flow.x }}%</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <td>Discharge (m<sup>3</sup>/s)</td>
+          {% for flow in flows %}
+            <td>{{ flow.y }}</td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}
+
+{% block javascript %}
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript">
+    var flowjson = JSON.parse('{{ records | escapejs }}');
+    var graphtitle = "{{ name }}";
+  </script>
+  <script src="{% static 'js/streamflow.js' %}"></script>
+{% endblock javascript %}

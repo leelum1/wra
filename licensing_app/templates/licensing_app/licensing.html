@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block head %}
+  <meta name="description" content="Abstraction Licensing forms and information for abstracting water in Trinidad and Tobago">
+  <title>Abstraction Licensing</title>
+  <style media="screen">
+
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  {% if user.is_abstractor %}
+    <a class="sidebar-button" href="{% url 'licensing_app:detail' %}">View/ Apply Licences</a>
+  {% else %}
+    <a class="sidebar-button" href="{% url 'login' %}?next={% url 'licensing_app:detail' %}">
+      To view or apply for a license, login here</a>
+  {% endif %}
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1 class="display-4">Licensing</h1>
+
+    <p class="lead">Water resources regulation through abstraction licences. Log
+      in to apply for a new licence or view past licences.</p>
+
+    <p>The WRA issues a water abstraction license, which is a legal contract
+      conferring a water use right, that is, a right to use the water abstracted
+      from a surface or groundwater source. This license does not confer
+      ownership of the water, nor does it guarantee the quality of the water or
+      that the volume authorized for abstraction will always be available. It
+      provides for re-allocation of water in circumstances of emergency, at
+      times of scarcity and in cases of competing applications. Also, it assures
+      that no additional license will be granted which may reduce the volume of
+      previous allocations.</p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="functions">Functions</h4>
+    <p>The license to permit the abstraction of water from surface and
+      groundwater sources consists of the following requirements and
+      restrictions:</p>
+    <ul>
+      <li>Limits the volume of water to be abstracted on a monthly basis.</li>
+      <li>Limits the use to which water can be made.</li>
+      <li>Limits the duration and validity of the permit.</li>
+      <li>Specifies the method for measurement of volumes of water to be abstracted.</li>
+      <li>Restricts the source(s) from which abstractions may be made.</li>
+      <li>Expires at the end of year in which it is granted.</li>
+      <li>Requires renewal at the end of a calendar year.</li>
+      <li>Requires compliance with the terms and conditions under which the
+        license is issued, default of which may lead to revocation of
+        license.</li>
+      <li>Specifies that violation of the terms and conditions of a license
+        gives rise to an offence.</li>
+      <li>Requires approval of the Ministry of Works, Drainage Division for
+        the construction of any proposed structure in or on the banks of
+        rivers for the diversion of flows.</li>
+    </ul>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="application">Application Process</h4>
+    <p>To apply for an abstraction license ...</p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="fees">Applicable Fees</h4>
+    <p>There is an administration fee of $150.00 plus VAT which includes a
+      non-refundable application fee and covers the cost of the associated
+      field and office investigation and the evaluation report, which are
+      undertaken for the determination of the decision on the applications.
+      The fee structure is as follows:</p>
+    <ul>
+      <li>A unit-based charge for the volume of water abstracted to be paid
+        by the licensed abstractor with the charges specific to purpose of
+        use of the abstracted water:
+        <ul>
+          <li>Industrial - $0.36 per cubic metre</li>
+          <li>Irrigation or industrial - $0.10 per cubic metre (when flow returns as compensation water).</li>
+        </ul></li>
+        <li>A minimum charge of $120.00 per month.</li>
+        <li>Farmers registered with the Ministry of Food Production land and
+          Marine Resources pay to WASA the rate of $0.10 per cubic metre for
+          abstracted water which is to be used for primary agricultural
+          production.</li>
+        <li>Farmers registered with the Ministry of Food Production land and Marine Resources pay to WASA a processing fee of $150.00 plus VAT on application for an abstraction license.</li>
+    </ul>
+  </div>
+
+{% endblock content %}

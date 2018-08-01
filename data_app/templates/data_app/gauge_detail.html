@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block head %}
+  <meta name="description" content="Data access for the {{ raingauge.name }} rainfall gauge">
+  <title>{{ raingauge.name }} Rain Gauge</title>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.css' rel='stylesheet' />
+  <link rel="stylesheet" href="{% static 'css/rainmap.css' %}">
+  <link rel="stylesheet" href="{% static 'css/graph.css' %}">
+  <style media="screen">
+
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'data_app:gaugelist' %}">Rainfall Gauge List</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'data_app:IDF' pk=raingauge.code %}">IDF Curves</a>
+  {% if user.is_operations %}
+    <a class="sidebar-button" href="{% url 'data_app:addrainfall' %}">Add rainfall</a>
+  {% endif %}
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>{{ raingauge.name }} - {{ raingauge.code }}</h1>
+
+    <div class="row">
+      <div class="col-md-7 col-sm-12">
+        <p>The {{ raingauge.name }} rain gauge is located in the {{ raingauge.watershed }}
+          watershed. Records began on {{ defaultstart }} and the latest entry was on
+          {{ defaultend }}. The status of this gauge is currently active. See
+          below for more options to query the database, view monthly statistics and
+          Intensity-Duration-Frequency curves. Any query results will be posted below.</p>
+
+        <p>{{ raingauge.description }}</p>
+
+        <table>
+          <tr>
+            <td>Type:</td>
+            <td>Pot Gauge</td>
+          </tr>
+          <tr>
+            <td>Watershed:</td>
+            <td>{{ raingauge.watershed }}</td>
+          </tr>
+          <tr>
+            <td>Northing:</td>
+            <td>{{ raingauge.northing|floatformat:6 }}</td>
+          </tr>
+          <tr>
+            <td>Easting:</td>
+            <td>{{ raingauge.easting|floatformat:6 }}</td>
+          </tr>
+          <tr>
+            <td>Maximum Rainfall for one day: </td>
+            <td>{{ statslist.1 }} mm. on {{ statslist.2 }}</td>
+          </tr>
+          <tr>
+            <td>Average Annual Rainfall:</td>
+            <td>{{ statslist.3 }} mm.</td>
+          </tr>
+          <tr>
+            <td>Maximum Annual Rainfall:</td>
+            <td>{{ statslist.4 }} for {{ statslist.5 }} mm.</td>
+          </tr>
+        </table>
+
+        <div class="container" style="text-align:center;">
+          {% if user.is_operations %}
+            <a class="btn btn-primary" href="{% url 'data_app:addrainfall' %}">Add rainfall</a>
+          {% endif %}
+        </div>
+
+        <h3 style="margin-top:50px;">Frequency</h3>
+        <p>View the Intensity-Duration-Frequency Curves here. Note that this page
+          may take several seconds to load as it is dynamically generated from the
+          database.</p>
+
+        <div class="" style="text-align:center;">
+          <a class="btn btn-secondary" style="width:50%;" href="{% url 'data_app:IDF' pk=raingauge.code %}">IDF Curves</a>
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <div id="map"></div>
+
+        <div id="dataquery">
+          <h3 style="text-align:center;">Data query</h3>
+          <form method="get">
+            <p>Results will be posted at the bottom of the page. Select type of data:</p>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="datetype" value="daily" checked>
+                Daily
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="datetype" value="monthly">
+                Monthly
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="datetype"  value="annual">
+                Annual
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" id="entire" type="checkbox" value=""> Select
+                to search entire record</label>
+            </div>
+            <br>
+            <div class="form-group">
+              <label for="startdate">Start Date</label>
+              <input type="date" class="form-control" id="startdate" name="startdate"><br>
+              <label for="enddate">End Date</label>
+              <input type="date" class="form-control" id="enddate" name="enddate"><br>
+            </div>
+            <input type="submit" class="btn btn-success" value="Search!" style="width:100%;">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h3>Monthly Statistics</h3>
+    <table>
+      <thead>
+        <th></th>
+        <th>Jan</th>
+        <th>Feb</th>
+        <th>Mar</th>
+        <th>Apr</th>
+        <th>May</th>
+        <th>Jun</th>
+        <th>Jul</th>
+        <th>Aug</th>
+        <th>Sep</th>
+        <th>Oct</th>
+        <th>Nov</th>
+        <th>Dec</th>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Average</td>
+          <td>{{ statslist.6 }}</td>
+          <td>{{ statslist.7 }}</td>
+          <td>{{ statslist.8 }}</td>
+          <td>{{ statslist.9 }}</td>
+          <td>{{ statslist.10 }}</td>
+          <td>{{ statslist.11 }}</td>
+          <td>{{ statslist.12 }}</td>
+          <td>{{ statslist.13 }}</td>
+          <td>{{ statslist.14 }}</td>
+          <td>{{ statslist.15 }}</td>
+          <td>{{ statslist.16 }}</td>
+          <td>{{ statslist.17 }}</td>
+        </tr>
+        <tr>
+          <td>Maximum</td>
+          <td>{{ statslist.18 }}</td>
+          <td>{{ statslist.19 }}</td>
+          <td>{{ statslist.20 }}</td>
+          <td>{{ statslist.21 }}</td>
+          <td>{{ statslist.22 }}</td>
+          <td>{{ statslist.23 }}</td>
+          <td>{{ statslist.24 }}</td>
+          <td>{{ statslist.25 }}</td>
+          <td>{{ statslist.26 }}</td>
+          <td>{{ statslist.27 }}</td>
+          <td>{{ statslist.28 }}</td>
+          <td>{{ statslist.29 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="container" id='graph' style="text-align:center;">
+    <svg style="font: 10px sans-serif;"></svg>
+  </div>
+
+  {% if dailyrecords %}
+    <div class="container">
+      <h3 style="text-align:center; margin-bottom:20px;">
+        Daily Records for {{ startdate|date:"d M Y" }} to {{ enddate|date:"d M Y" }}</h3>
+      <table id="dailytable" style="width:90%;">
+        <thead>
+          <th>Date</th>
+          <th>Rainfall (mm)</th>
+          <th>Rainfall (in)</th>
+        </thead>
+        {% for record in dailyrecords %}
+          <tr>
+            <td>{{ record.date }}</td>
+            <td style="text-align:right;">{{ record.fake|floatformat:3 }}</td>
+            <td style="text-align:right;">{{ record.toinches|floatformat:3 }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+      <div style="text-align:center;">
+        <button class="btn btn-primary" style="width:90%; "onclick="copyFunction(dailytable)">Copy table</button>
+      </div>
+    </div>
+
+  {% elif monthlyrecords %}
+    <div class="container">
+      <h3 style="text-align:center;">
+        Monthly Records  for {{ startdate|date:"d M Y" }} to {{ enddate|date:"d M Y" }}</h3>
+      <table id="monthtable" style="width:90%; margin-bottom:0;">
+        <thead>
+          <th>Year</th>
+          <th>Jan</th>
+          <th>Feb</th>
+          <th>Mar</th>
+          <th>Apr</th>
+          <th>May</th>
+          <th>Jun</th>
+          <th>Jul</th>
+          <th>Aug</th>
+          <th>Sep</th>
+          <th>Oct</th>
+          <th>Nov</th>
+          <th>Dec</th>
+        </thead>
+        {% for record in monthlyrecords %}
+          <tr>
+            <td>{{ record.0 }}</td>
+            <td style="text-align:right;">{{ record.1 }}</td>
+            <td style="text-align:right;">{{ record.2 }}</td>
+            <td style="text-align:right;">{{ record.3 }}</td>
+            <td style="text-align:right;">{{ record.4 }}</td>
+            <td style="text-align:right;">{{ record.5 }}</td>
+            <td style="text-align:right;">{{ record.6 }}</td>
+            <td style="text-align:right;">{{ record.7 }}</td>
+            <td style="text-align:right;">{{ record.8 }}</td>
+            <td style="text-align:right;">{{ record.9 }}</td>
+            <td style="text-align:right;">{{ record.10 }}</td>
+            <td style="text-align:right;">{{ record.11 }}</td>
+            <td style="text-align:right;">{{ record.12 }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+      <div style="text-align:center;">
+        <button class="btn btn-primary" style="width:90%; "onclick="copyFunction(monthtable)">Copy table</button>
+      </div>
+    </div>
+
+  {% elif annualrecords %}
+    <div class="container">
+      <h3 style="text-align:center; margin-bottom:20px;">
+        Annual Records for {{ startdate|date:"d M Y" }} to {{ enddate|date:"d M Y" }}</h3>
+      <table id="annualtable" style="width:90%;">
+        <thead >
+          <th>Year</th>
+          <th>Total Rainfall (mm)</th>
+          <th>Total Rainfall (in)</th>
+          <th>Max Daily Rainfall (mm)</th>
+        </thead>
+        {% for record in annualrecords %}
+          <tr>
+            <td style="text-align:center;">{{ record.0 }}</td>
+            <td style="text-align:right;">{{ record.1|floatformat:1 }}</td>
+            <td style="text-align:right;">{{ record.2|floatformat:2 }}</td>
+            <td style="text-align:right;">{{ record.3|floatformat:1 }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+      <div style="text-align:center;">
+        <button class="btn btn-primary" style="width:90%; "onclick="copyFunction(annualtable)">Copy table</button>
+      </div>
+    </div>
+  {% endif %}
+{% endblock content %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    window.onload = $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+
+    $('#entire').on('click', function(){
+      if ($("#entire").is(':checked')){
+        $('#startdate').val("{{defaultstart|date:"Y-m-d"}}");
+        $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+      }
+    });
+  </script>
+
+  <script type="text/javascript">
+    var northing = {{ north }};
+    var easting = {{ east }};
+  </script>
+
+  <script src="{% static 'js/rainmap.js' %}"></script>
+
+  <script type="text/javascript">
+    map.on('click', 'Rainfall', function (e) {
+      var coordinates = e.features[0].geometry.coordinates.slice();
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      };
+      var code = e.features[0].properties.Number.replace(":", ".");
+      var url_mask = "{% url 'data_app:gaugedetail' pk=1.1 %}".replace(/1.1/, code);
+
+      new mapboxgl.Popup().setLngLat(coordinates)
+          .setHTML('<h6>' + e.features[0].properties.Name + ' Pot Gauge</h6>\
+          <table><tr><td style="border:none;">Code:</td><td style="border:none;">' + e.features[0].properties.Number + '</td></tr>\
+          <tr><td style="border:none;">Watershed:</td><td style="border:none;">' + e.features[0].properties.Watershed + '</td></tr>\
+          <tr><td colspan=2 style="text-align:center; height:40px; border:none;"><a target=__blank href=' + url_mask + '>Navigate to Data Query</a></td></tr></table>')
+          .addTo(map);
+      });
+  </script>
+
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+  <script type="text/javascript">
+    var graphtitle = "{{ raingauge.name }}";
+    var rainjson = JSON.parse('{{ rainjson | escapejs }}');
+    var max_rain = JSON.parse('{{ max_json | escapejs }}');
+  </script>
+
+  <script src="{% static 'js/rainfall.js' %}"></script>
+
+{% endblock javascript %}

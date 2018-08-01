@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load staticfiles  %}
+{% block head %}
+  <meta name="description" content="Data from the {{ metering.name }} metering site">
+  <title>{{ metering.name }} Current Metering Site</title>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.css' rel='stylesheet' />
+  <link rel="stylesheet" href="{% static 'css/rainmap.css' %}">
+  <style media="screen">
+  #copy{
+    color: blue;
+    font-size: 12px;
+  }
+
+  #copy:hover{
+    text-decoration: underline;
+  }
+
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'streamflow_app:metering_list' %}">Metering List</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'streamflow_app:recession' pk=metering.code %}" style="border-bottom:1px solid grey;">Dry Season Reliability</a>
+  {% if user.is_operations %}
+    <a class="sidebar-button" href="{% url 'streamflow_app:add_metering' pk=metering.code %}">Add Values</a>
+  {% endif %}
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>{{ metering.name }} River</h1>
+    <div class="row">
+      <div class="col-md-7 col-sm-12">
+        <p>{{ metering.description }}</p>
+        <div class="container" style="text-align:center;">
+          {% if user.is_operations %}
+            <a class="btn btn-primary" href="{% url 'streamflow_app:add_metering' pk=metering.code %}">Add Values</a>
+          {% endif %}
+        </div>
+        <p>Below are some attributes of the {{ metering.name }} River. Fill out the
+          fields under Data Query to explore the database. Results will be presented
+          at the bottom of this page.</p>
+      </div>
+      <div class="col-md-5 col-sm-12">
+        <div id="map"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-7 col-sm-12">
+        <h4 style="margin-top:30px;">Quick Stats</h4>
+        <table>
+          <tr>
+            <td style="width:25%;">Code:</td>
+            <td style="width:75%;">{{ metering.code }}</td>
+          </tr>
+          <tr>
+            <td>Category:</td>
+            <td>{{ metering.category }}</td>
+          </tr>
+          <tr>
+            <td>Watershed:</td>
+            <td>{{ metering.watershed }}</td>
+          </tr>
+          <tr>
+            <td>Northing:</td>
+            <td>{{ metering.northing }}</td>
+          </tr>
+          <tr>
+            <td>Easting:</td>
+            <td>{{ metering.easting }}</td>
+          </tr>
+          <tr>
+            <td>Period:</td>
+            <td>{{ defaultstart }} to {{ defaultend }}</td>
+          </tr>
+        </table>
+
+        <div class="container">
+          <a class="btn btn-primary" style="width:80%;" href="{% url 'streamflow_app:recession' pk=metering.code %}">Reliability Curves</a>
+        </div>
+      </div>
+
+      <div class="col-md-5 col-sm-12">
+        <div class="container" style="margin-top:30px; background-color:white; border-radius:5px; padding:20px;">
+          <h4 style="text-align:center;">Data query</h4>
+
+          <form method="get">
+            <div class="form-group">
+              <label for="startdate">Start Date</label>
+              <input type="date" class="form-control" id="startdate" name="startdate"><br>
+              <label for="enddate">End Date</label>
+              <input type="date" class="form-control" id="enddate" name="enddate">
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" id="entire" type="checkbox" value=""> Select
+                to search entire record</label>
+            </div><br>
+            <input type="submit" class="btn btn-success" value="Search!" style="width:100%;">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <h4 style="margin-bottom:20px; text-align:center;">Metering Measurements</h4>
+    <div style="text-align:right;">
+      <a id="copy" onclick="CopyStuff(document.getElementById('meteringtable'));">Copy table</a>
+    </div>
+    <table id="meteringtable">
+      <thead>
+        <th>Date</th>
+        <th>Streamflow (m<sup>3</sup>)</th>
+        <th>Streamflow (MGD)</th>
+      </thead>
+      {% for record in meterings %}
+        <tr>
+          <td>{{ record.date }}</td>
+          <td style="text-align:right;">{{ record.fake|floatformat:3 }}</td>
+          <td style="text-align:right;">{{ record.toMGD|floatformat:3 }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock content %}
+{% block javascript %}
+  <script type="text/javascript">
+    window.onload = $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+    window.onload = $('#startdate').val("{{defaultstart|date:"Y-m-d"}}");
+
+    $('#entire').on('click', function(){
+      if ($("#entire").is(':checked')){
+        $('#startdate').val("{{defaultstart|date:"Y-m-d"}}");
+        $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+      }
+    });
+  </script>
+
+  <script type="text/javascript">
+    var northing = {{ north }};
+    var easting = {{ east }};
+  </script>
+
+  <script src="{% static 'js/intakemap.js' %}"></script>
+
+  <script type="text/javascript">
+    map.on('click', 'Intakes', function (e) {
+      var coordinates = e.features[0].geometry.coordinates.slice();
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      };
+      var code = e.features[0].properties.Code;
+      var url_mask = "{% url 'streamflow_app:metering_detail' pk=2.4 %}".replace(/2.4/, code);
+      new mapboxgl.Popup().setLngLat(coordinates)
+          .setHTML('<h6>' + e.features[0].properties.Name + ' Intake</h6>\
+          <table><tr><td style="border:none;">Code:</td><td style="border:none;">' + e.features[0].properties.Code + '</td></tr>\
+          <tr><td style="border:none;">Watershed:</td><td style="border:none;">' + e.features[0].properties.Watershed + '</td></tr>\
+          <tr><td colspan=2 style="text-align:center; height:40px; border:none;"><a target=__blank href=' + url_mask + '>Navigate to Data Query Page</a></td></tr></table>')
+          .addTo(map);
+    });
+  </script>
+{% endblock javascript %}

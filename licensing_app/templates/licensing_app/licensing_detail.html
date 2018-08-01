@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block head %}
+  <title>Abstraction Licensing</title>
+  <meta name="description" content="">
+  <style media="screen">
+
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'licensing_app:licensing' %}">Licensing Home</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Water Abstraction Licensing</h1>
+    <div class="row">
+      <div class="col">
+        <p>Client: {{ user.first_name }} {{ user.last_name }}</p>
+        <p>Registration no: {{ user.registration_no }}</p>
+        <p>Address: {{ user.address }}</p>
+        <p>Contact no: {{ user.contact }}</p>
+      </div>
+      <div class="col">
+        <p>To apply for a new licence, click the button below</p>
+        <a class="btn btn-primary" href="{% url 'licensing_app:apply' %}">Apply for New License</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="current">Current Licences</h4>
+    {% if licences %}
+    {% else %}
+      <p>You do not have any current licences to abstract water.</p>
+    {% endif %}
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="past">Past Licences</h4>
+    {% if licences.date %}
+    {% else %}
+      <p>There are no past licences to show</p>
+    {% endif %}
+  </div>
+{% endblock content %}

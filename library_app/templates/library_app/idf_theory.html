@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}
+  <title>Home</title>
+{% endblock title %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">SOP Home</a>
+  <a class="sidebar-button" href="{% url 'library_app:idf' %}">Procedure</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container">
+    <h1>Intensity-Duration-Frequency Curves Theory</h1>
+  </div>
+
+  <div class="container">
+    <h4 id="data">Data</h4>
+    <p>Daily rainfall in Trinidad and Tobago is measured by pot gauges. WRA also
+      uses HOBO Data Logging Rain Gauges, which are capable of recording instantaneous
+      rainfall. Using this data would lead to more accurate results, however, the
+      limitation is that these gauges were installed less than 10 years ago, meaning that
+      the data is insufficient to fit to a distribution. Therefore the daily
+      rainfall values are used to create IDF curves. To split these daily values
+      into shorter durations, the empirical reduction formula is used.</p>
+  </div>
+
+  <div class="container">
+    <h4 id="esda">Outliers</h4>
+    <p>Data must be ckecked for outliers that can skew the results.</p>
+  </div>
+
+  <div class="container">
+    <h4 id="emp">The Empirical Reduction Formula</h4>
+    <p>The Indian Meteorological Department has used the Empirical Reduction Formula
+      with great success. It has since then been applied all over the world where
+      there is a need to convert daily data to short duration values in order to
+      create IDF curves. The Empirical Reduction Formula is shown below.</p>
+
+    <p style="text-align:center;">\(P_d = P_{24} * ({d\over24})^{({1\over3})}\)</p>
+
+    <p>Where P<sub>d</sub> = Rainfall amount in mm for a specified duration, d = duration in
+      hours, and P<sub>24</sub> = Maximum 24 hour rainfall. For each year of record, values of
+      P<sub>d</sub> are found for found for each duration using the annual maximum value. These
+      rainfall amounts are then converted to rainfall intensities.</p>
+  </div>
+
+  <div class="container">
+    <h4 id="calculator">Intensity Calculator</h4>
+    <p>At a time when there is sufficient data to use the instantaneous data from
+      the HOBO gauges, the Maximum Rainfall Intensity Calculator will be used to
+      find the maximum short duration rainfall at a gauge. The HOBO Rainfall gauge
+      uses the tipping bucket technique, where it records the timestamp at which
+      its bucket “tips”. One tip is equal to 2mm of rainfall. When data is exported
+      from the HOBO gauge, it can be imported to the Maximum Rainfall Intensity
+      Calculator, which would then process the data and create an output csv file
+      of specified short-duration rainfall intensities. The IDF curves can then be
+      easily developed. The SOP on the Generation of Rainfall Intensity Data
+      describes how to use the calculator. No. I am not interested in re-writing
+      that program.</p>
+  </div>
+
+  <div class="container">
+    <h4 id="intensity">Intensity</h4>
+    <p>Rainfall intensity is defined as a rainfall depth per unit time, as shown
+      below. Rainfall intensity is an important hydrological parameter, as it is
+      used to determine the design flow rates through pipes, culverts. etc, through
+      the use of equations such as the rational formula and time of concentration
+      formulas.</p>
+
+    <p style="text-align:center;">\(i = {P\over t}\)</p>
+
+    <p>Where i = rainfall intensity in \(mm \over hr\), P = rainfall depth in mm, and t =
+      duration of rainfall in hours. The mean and standard deviation of all values
+      for each duration are then calculated. The next step is to calculate the
+      Gumbel K factor for each return period of interest.</p>
+  </div>
+
+  <div class="container">
+    <h4 id="gumbel">The Gumbel Distribution</h4>
+    <p>The Gumbel distribution is regularly used by many countries to model rainfall
+      events. Historically, it has been successfully used to model rainfall data
+      in Trinidad and Tobago. Rainfall values for selected durations, such as 5
+      minutes, 10 minutes, 60 minutes, etc, are calculated using the frequency
+      factor equation given below.</p>
+
+    <p style="text-align:center;">\(x_T = &mu;_x + K_T * &sigma;_x \)</p>
+
+    <p>Where x<sub>T</sub> = Rainfall intensity for return period T in mm/hr,
+      &mu;<sub>x</sub> = mean of fitted data in mm/hr, K<sub>T</sub> = frequency
+      factor, and &sigma;<sub>x</sub> = standard deviation of fitted data in mm/hr.
+      Frequency factors for the Gumbel distribution are shown in the table below.
+      The formula for the frequency factor varies depending on which probability
+      distribution is selected.</p>
+
+    <p style="text-align:center;">\(K_T = -{\sqrt6 \over &pi;}\{0.5772 + ln[ln\bigl({T \over {T-1}}\bigr)]\}\)</p>
+
+    <table>
+      <thead>
+        <th>Return Period</th>
+        <th>2</th>
+        <th>5</th>
+        <th>10</th>
+        <th>25</th>
+        <th>50</th>
+        <th>100</th>
+      </thead>
+      <tbody>
+        <tr>
+          <td>KT</td>
+          <td>-0.164</td>
+          <td>0.719</td>
+          <td>1.305</td>
+          <td>2.044</td>
+          <td>2.592</td>
+          <td>3.137</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="container">
+    <h4 id="graph">Graphing</h4>
+    <p>To create the IDF curve for each station, rainfall intensity in mm/hr is
+      plotted on the y-axis, and the duration of rainfall in minutes is plotted
+      on the x-axis for each return period. The curves are plotted on logarithmic
+      scales for ease of use.
+    <a href="{% url 'library_app:idf' %}">See the Procedure for more.</a>
+  </p>
+  </div>
+
+  <div class="container">
+    <h4 id="reference">References</h4>
+  </div>
+  
+{% endblock content %}
+{% block javascript %}
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+{% endblock javascript %}

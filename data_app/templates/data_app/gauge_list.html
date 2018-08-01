@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block head %}
+  <meta name="description" content="List of all rainfall gauges in Trinidad and Tobago">
+  <title>Rainfall Gauges in Trinidad and Tobago</title>
+  <style media="screen">
+    table{
+      margin-bottom: 40px;
+    }
+
+    td > a{
+      text-decoration: none;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data' %}" style="padding-bottom:20px; padding-top:20px; border-bottom:1px solid grey;">Data home</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">Rainfall SOPs</a>
+  <a class="sidebar-button" href="{% url 'data_app:compare' %}">Compare Gauges</a>
+  {% if user.is_operations %}
+    <a class="sidebar-button" href="{% url 'data_app:readers' %}">Readers</a>
+  {% endif %}
+  {% if user.is_management %}
+    <a class="sidebar-button" href="{% url 'admin:index' %}">Add or Edit Gauge</a>
+  {% endif %}
+
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Rainfall Gauge Network</h1>
+    <p class="lead">This is a list of all {{ gauges.count }} currently operating gauges in the monitoring
+      network. Click on the table headings to sort.</p>
+    <input id="searchInput" class="form-control" type="text" name="name" placeholder="Search gauges here">
+
+    <div style="text-align:right;">
+      <a id="copy" onclick="CopyStuff(document.getElementById('gaugelist'));">Copy table</a>
+    </div>
+    <table class="table-striped" id="gaugelist">
+      <thead>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Category</th>
+        <th>Watershed</th>
+      </thead>
+      <tbody>
+        {% for gauge in gauges %}
+          <tr>
+            <td><a href="{% url 'data_app:gaugedetail' pk=gauge.code %}">{{ gauge.name }}</a></td>
+            <td><a href="{% url 'data_app:gaugedetail' pk=gauge.code %}">{{ gauge.code }}</a></td>
+            <td>{{ gauge.category }}</td>
+            <td>{{ gauge.watershed }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+
+{% block javascript %}
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      results = $('#gaugelist').DataTable({
+        "order": [ 0, 'asc' ],
+        "paging": false,
+        "searching": true,
+        "info": false,
+        "dom": 'lrtip',
+      });
+      $('#searchInput').keyup(function(){
+        results.search($(this).val()).draw() ;
+      })
+    });
+  </script>
+{% endblock %}

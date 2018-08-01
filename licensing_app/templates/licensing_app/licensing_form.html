@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block head %}
+  <title>License</title>
+  <meta name="description" content="">
+  <style media="screen">
+
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'licensing_app:licensing' %}">Licensing Home</a>
+  <a class="sidebar-button" href="">Back to Profile</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h2>New Surface Water Application</h2>
+    <p>The Regulatory and Licensing Unit shall issue a license to abstract water
+      from a surface water source subject to the following:</p>
+    <ul>
+      <li>Completion of the application for license to abstract water from a surface
+        source</li>
+      <li>Completion of a field survey and a hydrological assessment by the Regulatory
+        and Licensing Unit.</li>
+      <li>Submission of a water quality analysis of the surface water source</li>
+      <li>Submission of a schematic diagram of the proposed structure for the diversion
+        of water from the river channel (where applicable).</li>
+      <li>Submission by wash plant operators, the schematic diagram of the established
+        closed loop water recycling system as prescribed by the Minerals Act (2000)
+        for the prevention of untreated effluent entering directly into water courses
+        (where applicable).</li>
+      <li>Submission of a copy of the license from the Ministry of Energy and Energy
+        Industries permitting the operations of the quarry or wash plant.</li>
+      <li>Submission of proof of interest in the land for which the purpose of the
+        application relates.</li>
+    </ul>
+  </div>
+
+  <div class="container-fluid">
+    <form method="post">
+      {% include "form.html" %}
+      {% csrf_token %}
+    </form>
+  </div>
+{% endblock content %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block head %}
+  <meta name="description" content="">
+  <title>SOP</title>
+  <style media="screen">
+    ol{
+      margin-bottom: 50px;
+      min-height: 200px;
+    }
+
+    ol > li{
+      margin-bottom: 10px;
+    }
+
+    h4{
+      text-align: center;
+      background-color: lightgrey;
+      border: 1px solid black;
+    }
+
+    a{
+      text-decoration: none;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'library_app:library' %}">Library Home</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Standard Operating Procedures</h1>
+    <p>Standard Operating Procedures (SOPs) are the methods of data collection
+      and analysis used to ensure consistency and accuracy in all datasets.
+      Users are asked to note that every effort and care have been taken in
+      selecting methods and recommendations that are appropriate to Trinidad and
+      Tobago conditions. Notwithstanding these efforts, no warranty or guarantee,
+      expressed, implied or statutory is made as to the accuracy, reliability,
+      suitability or the results of the methods or recommendations. The use of
+      these SOPs therefore requires professional interpretation and judgment.
+      Appropriate design procedures and assessment must be applied, to suit the
+      particular circumstances under consideration. </p>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <h4 id="general">General</h4>
+        <ol>
+          {% for sop in general %}
+            <li><a href="{% url 'library_app:sop-detail' slug=sop.slug %}">{{ sop.title }}</a></li>
+          {% endfor %}
+        </ol>
+      </div>
+
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <h4 id="rainfall">Rainfall</h4>
+        <ol>
+          {% for sop in rainfall %}
+            <li><a href="{% url 'library_app:sop-detail' slug=sop.slug %}">{{ sop.title }}</a></li>
+          {% endfor %}
+        </ol>
+      </div>
+
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <h4 id="streamflow">Streamflow</h4>
+        <ol>
+          {% for sop in streamflow %}
+            <li><a href="{% url 'library_app:sop-detail' slug=sop.slug %}">{{ sop.title }}</a></li>
+          {% endfor %}
+        </ol>
+      </div>
+
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <h4 id="groundwater">Groundwater</h4>
+        <ol>
+          {% for sop in groudnwater %}
+            <li><a href="{% url 'library_app:sop-detail' slug=sop.slug %}">{{ sop.title }}</a></li>
+          {% endfor %}
+        </ol>
+      </div>
+
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <h4 id="quality">Water Quality</h4>
+        <ol>
+          {% for sop in quality %}
+            <li><a href="{% url 'library_app:sop-detail' slug=sop.slug %}">{{ sop.title }}</a></li>
+          {% endfor %}
+        </ol>
+      </div>
+
+      <div class="col-lg-4 col-md-6 col-sm-12">
+        <h4 id="gis">GIS</h4>
+        <ol>
+          {% for sop in gis %}
+            <li><a href="{% url 'library_app:sop-detail' slug=sop.slug %}">{{ sop.title }}</a></li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

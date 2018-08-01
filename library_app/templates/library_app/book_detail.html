@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+  <title>{{ book.title }}</title>
+  <meta name="description" content="{{ book.description }}">
+  <style media="screen">
+    h1{
+      font-size: 25px;
+    }
+
+   .buttons{
+     right:0px;
+     position:absolute;
+     bottom:0px;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'library_app:booklist' %}">Return to Library</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3 col-sm-12" style="text-align:center;">
+        {% if book.bookcover %}
+          <img src="{{ book.bookcover.url }}" alt="Book Cover">
+        {% else %}
+          <img src="{% static 'images/no_preview.png' %}" alt="Book Cover">
+        {% endif %}
+      </div>
+      <div class="col-md-9 col-sm-12">
+        <h1>{{ book.title }} - <small>{{ book.year }}</small></h1>
+        <div class="row">
+          <div class="col-8">
+            <p>by {{ book.author }}</p>
+            <p>Publisher: {{ book.publisher }}</p>
+            <p>ISBN: {{ book.isbn }}</p>
+            <p>Status: {{ book.status }}</p>
+          </div>
+          <div class="buttons col-4">
+            {% if book.document %}
+              <a class="btn btn-primary" href="{{ book.document.url }}">View Book</a>
+            {% elif user.is_authenticated and book.status == 'Available'  %}
+              <form method="get">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-success" name="submit" value="Request Book">
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    {% if book.description %}
+      <p>{{ book.description }}</p>
+    {% else %}
+      <p>Description of book. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    {% endif %}
+  </div>
+
+  <div class="container-fluid">
+    <h4>Related Books</h4>
+    <div class="row" style="text-align:center; margin-top:30px;">
+      {% for book in related %}
+      <div class="col" style="text-align:center;">
+        <a href="{% url 'library_app:book-detail' pk=book.id %}">
+          <img {% if book.bookcover %} src="{{ book.bookcover.url }}" {% else %} src="{% static 'images/no_preview.png' %}"{% endif %} alt="Book Cover">
+          <p style="text-align:center; margin-top:5px;"><strong>{{ book.title|truncatewords:10 }}</strong>
+          <br><em>{{ book.author }}</em></p>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock content %}
+{% block javascript %}
+
+{% endblock javascript %}

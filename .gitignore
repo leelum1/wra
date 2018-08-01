@@ -1,0 +1,7 @@
+__pycache__
+*.pyc
+credentials.csv
+images/
+*.zip
+secrets.json
+robots.txt

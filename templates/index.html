@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}
+  <meta name="description" content="The Water Resources Agency of Trinidad and Tobago
+  is responsible for monitoring and protecting the country's water resources, including
+  rainfall, streamflow, and groundwater">
+  <title>Water Resources of Trinidad and Tobago</title>
+{% endblock title %}
+{% block head %}
+  <style media="screen">
+    .button-nav{
+      background-color: white;
+      height: 100%;
+      width: 100%;
+      margin: 5px;
+      padding: 10px 5% 10px 5%;
+    }
+
+    .button-nav p{
+      text-align: center;
+    }
+
+    .button-nav:hover{
+      cursor: pointer;
+      outline: lightblue solid 10px;
+      transition: outline 0.3s;
+    }
+
+    .btn-title{
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .btn-text{
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    a{
+      text-decoration: none;
+    }
+
+    footer{
+      margin-top: 0px;;
+    }
+  </style>
+{% endblock head %}
+{% block body_block %}
+  <div class="container-fluid" style="background-color:white; text-align:center;">
+    <h1 class="display-4" style="margin-top:30px; text-align:center;">Water Resources of Trinidad and Tobago</h1>
+    <p class="lead">The Water Resources Agency is a department of the Water and Sewerage
+      Authority of Trinidad and Tobago. Its mission is to effectively manage the
+      country’s water resources by promoting their conservation, development and
+      protection for sustainable use, in a cost effective and integrated manner.
+      This website is not affliated in any way to the Water Resources Agency of
+      Trinidad and Tobago, and is only to be used for
+      <a href="{% url 'legal' %}">educational purposes.</a></p>
+
+    <div class="row" style="margin-top:70px; margin-bottom:50px;">
+      <div class="col-md-3 col-sm-6" style="text-align:center;">
+        <a href="{% url 'map_app:map' %}">
+          <button class="button-nav" type="button">
+            <img src="{% static 'images/mapicon.png' %}" style="height:100px;" alt="">
+            <p class="btn-title">Interactive Map</p>
+            <p class="btn-text">View watersheds, gauge and well locations, and more here</p>
+          </button>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6" style="text-align:center;">
+        <a href="{% url 'data' %}">
+          <button class="button-nav" type="button">
+            <img src="{% static 'images/dataicon.png' %}" style="height:100px;" alt="">
+            <p class="btn-title">Water Resources Data</p>
+            <p class="btn-text">Rainfall, Streamflow, Groundwater, Water Quality, and Reservoir Levels</p>
+          </button>
+        </a>
+      </div>
+      <div class="col-md-3 col-sm-6" style="text-align:center;">
+        <a href="{% url 'watershed_app:watersheds' %}">
+          <button class="button-nav" type="button">
+            <img src="{% static 'images/watershedicon.png' %}" style="height:100px;" alt="">
+            <p class="btn-title">Watersheds</p>
+            <p class="btn-text">Learn more about watersheds in Trinidad and Tobago</p>
+          </button>
+      </div>
+      <div class="col-md-3 col-sm-6" style="text-align:center;">
+        <a href="{% url 'library_app:library' %}">
+          <button class="button-nav" type="button">
+            <img src="{% static 'images/library.jpg' %}" style="height:100px;" alt="">
+            <p class="btn-title">WRA Library</p>
+            <p class="btn-text">Browse our library and other media</p>
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <img src="{% static 'images/IMG_1592.png' %}" style="height:400px; width:100%;" alt="">
+
+  <div class="container-fluid" style="text-align:center;">
+    <h2>A History of Water Resources</h2>
+    <p class="lead" style="text-align:center;">The Government of Trinidad and Tobago, in recognizing the need for
+      the development and control of the country's water resources, entered
+      into an arrangement with a Canadian firm to train persons in the
+      collection and analysis of basic hydrological and hydrometeorological
+      data between the period July 1966 and late 1970. The persons who were
+      trained formed the first staff of Water Resources Survey, which later
+      became known as the Water Resources Agency, and was appended to the Water
+      and Sewerage Authority in March 1976.</p>
+  </div>
+
+  <div class="container-fluid" style="background-color:white;">
+    <div class="row" style="margin-top:30px;">
+      <div class="col-md-7 col-sm-12">
+        <h2>Functions of the Water Resources Agency</h2>
+        <p>To achieve the mission of the WRA, the following key functions guide
+          the daily operations.</p>
+        <ul>
+          <li>Monitor rainfall, streamflow, groundwater, and water quality across
+            Trinidad and Tobago.</li>
+          <li>Manage the country's water resources by guiding abstraction from the
+            major reservoirs, wells, and rivers.</li>
+          <li>Issue water abstraction licences.</li>
+        </ul>
+      </div>
+      <div class="col-md-5">
+        <img src="{% static 'images/waterbalance.jpg' %}" alt="Some cool infographic">
+      </div>
+    </div>
+  </div>
+
+{% endblock body_block %}
+{% block javascript %}
+  <script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "url": "https://www.waterresourcestt.com",
+    "name": "Water Resources Trinidad and Tobago",
+    "contactPoint": [
+      { "@type": "ContactPoint",
+        "telephone": "+1-868-662-2302",
+        "contactType": "customer service"
+      }
+    ]
+    }
+  </script>
+{% endblock javascript %}

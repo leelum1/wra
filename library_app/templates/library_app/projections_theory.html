@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+{% block head %}
+  <title>Reservoir Projections</title>
+  <meta name="description" content="The theory behind projecting water levels in reservoirs in Trindad and Tobago">
+  <style media="screen">
+    .sidebar{
+      overflow-y: scroll;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'library_app:sop' %}">SOP Home</a>
+  <a class="sidebar-button" href="{% url 'library_app:projections' %}">Procedure</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Reservoir Projections - Theory</h1>
+    <p>Reservoirs are essential in supplying water to the nation throughout the entire
+      year. They are especially crucial during the dry season, where water needs to be
+      stored and regulated. WRA monitors four major reservoirs in Trinidad and Tobago:
+      Caroni-Arena, Navet, Hollis, and Hillsborough. The table below shows some of the
+      parameters of each reservoir to be used in the calculations.</p>
+
+    <table>
+      <th></th>
+      <th>Caroni</th>
+      <th>Navet</th>
+      <th>Hollis</th>
+      <th>Hillsborough</th>
+      <tbody>
+        <tr>
+          <td>Total Capacity (m<sup>3</sup>)</td>
+          <td style="text-align:right;">44545455</td>
+          <td style="text-align:right;">18636363</td>
+          <td style="text-align:right;">4709091</td>
+          <td style="text-align:right;">1022727</td>
+        </tr>
+        <tr>
+          <td>Drainage Area (m<sup>2</sup>)</td>
+          <td style="text-align:right;">19900000</td>
+          <td style="text-align:right;">18200000</td>
+          <td style="text-align:right;">14200000</td>
+          <td style="text-align:right;">5460391</td>
+        </tr>
+        <tr>
+          <td>Spillway Elevation (ft)</td>
+          <td style="text-align:right;">119.0</td>
+          <td style="text-align:right;">312.0</td>
+          <td style="text-align:right;">619.6</td>
+          <td style="text-align:right;">870</td>
+        </tr>
+        <tr>
+          <td>Bottom Draw Off (ft)</td>
+          <td style="text-align:right;">79</td>
+          <td style="text-align:right;">268</td>
+          <td style="text-align:right;">576</td>
+          <td style="text-align:right;">848</td>
+        </tr>
+        <tr>
+          <td>Maximum Production (MGD)</td>
+          <td style="text-align:right;">75</td>
+          <td style="text-align:right;">20</td>
+          <td style="text-align:right;">8.0</td>
+          <td style="text-align:right;">1.5</td>
+        </tr>
+        <tr>
+          <td>Runoff Co-efficient</td>
+          <td style="text-align:right;">0.5</td>
+          <td style="text-align:right;">0.52</td>
+          <td style="text-align:right;">0.33</td>
+          <td style="text-align:right;">0.21</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <br><p>The main task in computing the reservoir projections is finding the change
+      in storage of the reservoirs over each month. The change is affected by:</p>
+
+    <ul>
+      <li>The overland flow of the drainage area into the reservoir</li>
+      <li>The evaporation over the surface of the reservoir</li>
+      <li>The recommended daily production from WRA</li>
+      <li>Pumping/ release rates (Caroni only)</li>
+      <li>Pump up from Lower Reservoir (Navet only)</li>
+    </ul>
+
+    <p>Therefore, the following equation represents the change in storage:</p>
+    <p style="text-align:center;"><em>Change in Storage = Inflows + Precipitation -
+      Evaporation - Production</em></p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="evap">Evaporation</h4>
+    <p>This table shows the evaporation values used in the spreadsheet. Values are in mm.</p>
+    <table>
+      <thead>
+        <th>Month</th>
+        <th>Caroni</th>
+        <th>Navet</th>
+        <th>Hollis</th>
+        <th>Hillsborough</th>
+      </thead>
+      <tbody>
+        <tr>
+          <td>January</td>
+          <td>4.5</td>
+          <td>2.8</td>
+          <td>2.4</td>
+          <td>3.4</td>
+        </tr>
+        <tr>
+          <td>Februrary</td>
+          <td>4.6</td>
+          <td>3.0</td>
+          <td>3.3</td>
+          <td>3.6</td>
+        </tr>
+        <tr>
+          <td>March</td>
+          <td>5.4</td>
+          <td>3.0</td>
+          <td>3.1</td>
+          <td>4.2</td>
+        </tr>
+        <tr>
+          <td>April</td>
+          <td>6.5</td>
+          <td>.37</td>
+          <td>3.2</td>
+          <td>4.6</td>
+        </tr>
+        <tr>
+          <td>May</td>
+          <td>6.5</td>
+          <td>3.9</td>
+          <td>3.1</td>
+          <td>4.5</td>
+        </tr>
+        <tr>
+          <td>June</td>
+          <td>4.1</td>
+          <td>3.3</td>
+          <td>2.8</td>
+          <td>3.8</td>
+        </tr>
+        <tr>
+          <td>July</td>
+          <td>4.1</td>
+          <td>3.2</td>
+          <td>2.9</td>
+          <td>3.7</td>
+        </tr>
+        <tr>
+          <td>August</td>
+          <td>3.4</td>
+          <td>3.4</td>
+          <td>3.1</td>
+          <td>3.8</td>
+        </tr>
+        <tr>
+          <td>September</td>
+          <td>4.5</td>
+          <td>3.1</td>
+          <td>2.9</td>
+          <td>3.8</td>
+        </tr>
+        <tr>
+          <td>October</td>
+          <td>3.6</td>
+          <td>3.1</td>
+          <td>2.5</td>
+          <td>3.4</td>
+        </tr>
+        <tr>
+          <td>November</td>
+          <td>4.0</td>
+          <td>2.9</td>
+          <td>2.9</td>
+          <td>3.1</td>
+        </tr>
+        <tr>
+          <td>December</td>
+          <td>3.4</td>
+          <td>2.9</td>
+          <td>2.4</td>
+          <td>3.2</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="inflow">Surface Inflow</h4>
+    <p>Surface inflows into the reservoir can are found using the equation shown
+      below. The runoff coefficient and drainage area for each reservoir are found
+      in the table above. The runoff coefficient is based on empirical data and should
+      be validated regularly. Historical data is used to do this. This formula is
+      very similar to the Rational Equation, where the runoff coefficient would be
+      mainly affected by land use. This inflow is a very rough estimate, as obtaining
+      a relationship between rainfall and runoff is very difficult. </p>
+    <p style="text-align:center"><em>Inflow = Monthly Projected Rainfall * Runoff coefficient * Drainage Area</em></p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="area">Surface Area</h4>
+    <p>The actual lake capacity is obtained from the dam controllers, and is used
+      to find the reservoir surface area using the storage curves. These curves can
+      be found in the Appendix. The initial storage at the start of the month is
+      found by converting the lake capacity to a volume. Note that the lake capacity
+      used is the lake capacity at the end of the previous month. This can now be
+      used to find the reservoir surface area using:</p>
+    <p style="text-align:center"><em>Surface Area = (Upper area - Lower area) *
+      (Water Level - Lower Level) + Lower area</em></p>
+    <p>The rounddown water level is found by using a lookup formula to find the
+      closest value in the storage curve for the reservoir. The roundup area is
+      next higher value in the storage curve. The water level is the actual water
+      level supplied by the dam controller. </p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="production">WASA Production</h4>
+    <p>Each of the reservoirs stores water to be treated at a nearby treatment plant.
+      The amount they produce is based on what WRA recommends to be a sustainable
+      amount. WASA sometimes sends potential productions rates that they would like
+      to supply, to see what affect they would have on the reservoirs. Note that
+      for Caroni-Arena, the WRA recommended production is 50-75 MGD. This is because
+      since this reservoir is affected by the pump/release rate rather than the
+      production rate at the Caroni plant, they are allowed to choose what rate to
+      produce based on the amount of water in the river. </p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="storage">Final Storage</h4>
+    <p>The final storage at the end of the month can be found by adding the change
+      in storage to the initial storage. The change in storage may be positive or
+      negative depending on whether the inflows or outflows to the reservoir was
+      greater. </p>
+    <p style="text-align:center"><em>Final Storage = Initial storage + change in storage</em></p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="level">Project Water Level</h4>
+    <p>This final storage will now be used as the initial storage for the next month.
+      Since the projected rainfall values and proposed production rates are known,
+      the reservoir levels can be forecasted. The projected water level is calculated
+      from the projected initial storage using the following equation:</p>
+    <p style="text-align:center"><em>Water level = Lower level + (Initial storage
+      - Lower storage) / (Higher storage - Lower storage)</em></p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="capacity">Projected Lake Capacity</h4>
+    <p>The lake capacity for the forecasted months is calculated from the final
+      storage as a percentage of the total capacity of the reservoir. </p>
+    <p style="text-align:center"><em>Project lake capacity = Final storage / Total capacity * 100</em></p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="days">Days Supply Remaining</h4>
+    <p>The Day Supply Remaining refers to the number of days after the end of the
+      month that the reservoir will be able to supply water at the current rate if
+      there were no other inflows or outflows to the reservoir. The siltation
+      represents the amount of dead storage in the reservoir that is unavailable
+      for production. Regular surveys of the reservoir need to be performed to update
+      the siltation value. Regular dredging of the reservoir reduces the siltation.</p>
+    <p style="text-align:center"><em>Days supply remaining = (Final storage - Siltation)/Daily production</em></p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="pump">Pump/Release Rates (Caroni only)</h4>
+    <p>The Caroni water treatment plant is fed directly by the Caroni River. When
+      the flow in the river is too low to sustain the required production rate of
+      the plant, water is released from the reservoir into the Caroni River.
+      Similarly, water is pumped up to the reservoir from the river when there is
+      excess flow. The maximum pumping rate is 60 MGD. For Caroni reservoir, the
+      equation would include the pump/release rate as shown below:</p>
+    <p style="text-align:center;"><em>Change in storage = Inflow + Precipitation - Evaporation
+      - Production +/- Pump/release volume</em></p>
+  </div>
+
+  <div class="container-fluid">
+    <h4 id="lower">Pump from Lower Reservoir (Navet only)</h4>
+    <p>The Navet reservoir is comprised of the upper and lower reservoir, each
+      having its own catchment. The Lower Reservoir is used for storage, which
+      can then be pumped up to the Upper reservoir when needed. The maximum pumping
+      rate is 20 MGD. For Navet reservoir, the equation for the change in storage
+      of the upper reservoir would include the pump back from the lower reservoir
+      as shown below. The storage curve for the lower reservoir can be found in
+      the Appendix. </p>
+    <p style="text-align:center;"><em>Change in storage = Inflow + Precipitation - Evaporation
+      - Production + Pump back from Navet Lower</em></p>
+  </div>
+
+  <div class="container-fluid">
+    <p>These equations were compiled onto a single spreadsheet. The instructions on its use can be found
+      <a href="{% url 'library_app:projections' %}">here.</a></p>
+  </div>
+{% endblock %}
+
+{% block javascript %}
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+{% endblock %}

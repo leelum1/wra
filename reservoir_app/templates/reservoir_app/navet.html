@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}
+  <meta name="description" content="Navet reservoir data and description">
+  <title>Navet Reservoir</title>
+{% endblock title %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'reservoir_app:reservoir' %}">Reservoir Home</a>
+  <a class="sidebar-button" href="{% url 'library_app:projectionstheory' %}">Reservoir SOP</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container">
+    <h1>Navet Reservoir</h1>
+  </div>
+
+  <div class="row container">
+    <div class="col-md-7 col-sm-12">
+      <p>The Navet reservoir serves the majority of South Trinidad, including San
+        Fernando, Moruga, and Rio Claro. The reservoir was commissioned in 1962</p>
+      <p>The Lower Navet Dam supplements the supply from the main reservoir.</p>
+      <p>Climatic stuff</p>
+      <p>The spillway design at the Navet reservoir is a labyrinth spilway, allowing
+        for more discharge at low head.</p>
+    </div>
+    <div class="col-md-5 col-sm-12">
+      <div class="container">
+        <table>
+          <tr>
+            <td>Full Capacity</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Spillway Elevation</td>
+            <td>312 ft</td>
+          </tr>
+          <tr>
+            <td>Bottom Draw Off</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Maximum Depth</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Maximum Production</td>
+            <td>20.4 MGD</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="container" style="background-color:white; border-radius:5px; padding:20px;">
+        <h4 style="text-align:center;">Data query</h4>
+
+        <form method="get">
+          <div class="form-group">
+            <label for="startdate">Start Date</label>
+            <input type="date" class="form-control" id="startdate" name="startdate"><br>
+            <label for="enddate">End Date</label>
+            <input type="date" class="form-control" id="enddate" name="enddate">
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" id="entire" type="checkbox" value=""> Select
+              to search entire record</label>
+          </div><br>
+          <input type="submit" class="btn btn-success" value="Search!" style="width:100%;">
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+{% block javascript %}
+  <script type="text/javascript">
+    window.onload = $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+
+    $('#entire').on('click', function(){
+      if ($("#entire").is(':checked')){
+        $('#startdate').val("{{defaultstart|date:"Y-m-d"}}");
+        $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+      }
+    });
+  </script>
+{% endblock javascript %}

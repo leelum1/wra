@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block head %}
+  <meta name="description" content="Data query results for {{ well }} observation well">
+  <title>{{ well }} Data Query</title>
+  <style media="screen">
+
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'groundwater_app:welldetail' pk=index_no%}">{{ name }}</a>
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'groundwater_app:groundwater' %}">Wells List</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Query results for {{ name }}</h1>
+
+    <div class="row" style="margin-top:30px;">
+      <div class="col-7">
+        <p>The readings for {{startdate|date:'d M Y'}} to {{ enddate|date:'d M Y' }} are shown in the
+          table below. To easily copy the table, press the "Copy table" button at the
+          bottom of the table.</p>
+      </div>
+      <div class="col-5">
+        <form method="get">
+          <div class="form-group">
+            <label for="startdate">Start Date</label>
+            <input type="date" class="form-control" id="startdate" name="startdate"><br>
+            <label for="enddate">End Date</label>
+            <input type="date" class="form-control" id="enddate" name="enddate">
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" id="entire" type="checkbox" value=""> Select
+              to search entire record</label>
+          </div><br>
+          <input type="submit" class="btn btn-success" value="Search!" style="width:100%;">
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <h4 style="margin-bottom:20px; text-align:center;">Well Readings</h4>
+
+    <table id="wellreadings">
+      <thead>
+        <th>Date</th>
+        <th>Reduced Level (m)</th>
+      </thead>
+      {% for reading in readings %}
+        <tr>
+          <td>{{ reading.date|date:'d M Y' }}</td>
+          <td style="text-align:right;">{{ reading.reading|floatformat:2 }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <div style="text-align:center;">
+      <button class="btn btn-primary" style="width:90%; "onclick="CopyStuff(document.getElementById('wellreadings'));">Copy table</button>
+    </div>
+  </div>
+
+{% endblock content %}
+{% block javascript %}
+    <script type="text/javascript">
+    window.onload = $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+    window.onload = $('#startdate').val("{{defaultstart|date:"Y-m-d"}}");
+
+    $('#entire').on('click', function(){
+      if ($("#entire").is(':checked')){
+        $('#startdate').val("{{defaultstart|date:"Y-m-d"}}");
+        $('#enddate').val("{{defaultend|date:"Y-m-d"}}");
+      }
+    });
+  </script>
+{% endblock javascript %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block head %}
+  <title>Home</title>
+
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'asset_app:asset' %}">Asset Home</a>
+  <a class="sidebar-button" href="{% url 'admin:index' %}">Admin</a>
+  <a class="sidebar-button" href="{% url 'data_app:gaugelist' %}">Rain Gauges</a>
+  <a class="sidebar-button" href="{% url 'streamflow_app:fuess_list' %}">Fuess gauges</a>
+  <a class="sidebar-button" href="{% url 'groundwater_app:groundwater' %}">Wells</a>
+  <a class="sidebar-button" href="{% url 'asset_app:computer' %}">IT</a>
+  <a class="sidebar-button" href="{% url 'asset_app:vehicle' %}">Vehicles</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>I.T. Department Assets</h1>
+    <p>A paragraph about the IT assets.</p>
+
+    <table id="itlist">
+      <thead>
+        <th>ID</th>
+        <th>Brand</th>
+        <th>Model</th>
+        <th>Serial No.</th>
+        <th>Type</th>
+        <th>User</th>
+        <th>Remarks</th>
+      </thead>
+      <tbody>
+        {% for item in computers %}
+          <tr>
+            <td>{{ item.comp_no }}</td>
+            <td>{{ item.brand }}</td>
+            <td>{{ item.model }}</td>
+            <td>{{ item.serial_no }}</td>
+            <td>{{ item.comp_type }}</td>
+            <td>{{ item.emp_no }}</td>
+            <td>{{ item.remarks }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}
+{% block javascript %}
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript">
+    //DataTable filter
+    $(document).ready(function() {
+      $('#itlist').DataTable({
+        "order": [ 0, 'asc' ],
+        "paging": false,
+        "searching": false,
+        "info": false,
+      });
+    } );
+  </script>
+{% endblock javascript %}

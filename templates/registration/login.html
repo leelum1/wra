@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}
+  <meta name="description" content="Login page for the website of the Water Resources Agency of Trinidad and Tobago">
+  <title>WRA Login</title>
+{% endblock title %}
+{% block head %}
+  <style media="screen">
+    h1{
+      text-align: center;
+    }
+
+    .heading{
+      width:75%;
+      text-align: center;
+    }
+
+    .login{
+      width:33.3%;
+      background-color: white;
+      border-radius: 5px;
+      padding: 20px;
+    }
+  </style>
+{% endblock head %}
+{% block body_block %}
+  <div class="container-fluid">
+    <h1>Water Resources Agency Login</h1>
+  </div>
+
+  <div class="container-fluid login">
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      {% include 'form.html' %}
+      <a style="font-size:12px; margin-bottom:20px;" href="{% url 'password_reset' %}">Forgot Password?</a>
+      <button type="submit" class="btn btn-primary btn-block">Log in</button>
+    </form>
+  </div>
+
+  <div class="container-fluid heading">
+    <p>If you are a abstractor, you must have a registered account with the WRA
+      to apply and view licences here. Contact the WRA for an account or if you
+      forgot your password.</p>
+  </div>
+{% endblock body_block %}

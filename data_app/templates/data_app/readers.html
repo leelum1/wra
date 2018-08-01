@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block head %}
+  <title>Gauge Readers</title>
+  <meta name="description" content="">
+  <style media="screen">
+    #copy{
+      color: blue;
+      font-size: 12px;
+    }
+
+    #copy:hover{
+      text-decoration: underline;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data' %}">Data Home</a>
+  {% if user.is_management %}
+    <a class="sidebar-button" href="{% url 'admin:index' %}">Add or Edit Gauge</a>
+  {% endif %}
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Pot Gauge Readers</h1>
+    <p>This is list of the current pot gauge readers. Edit info in admin</p>
+
+    <input id="searchInput" class="form-control" type="text" name="name" placeholder="Search readers here">
+
+    <div style="text-align:right;">
+      <a id="copy" onclick="CopyStuff(document.getElementById('gaugelist'));">Copy table</a>
+    </div>
+    <table id="readertable">
+      <thead>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Gauge Name</th>
+      </thead>
+      <tbody>
+        {% for person in readers %}
+          <tr>
+            <td>{{ person.first_name }} {{ person.last_name }}</td>
+            <td style="text-align:center;">{{ person.phone}}</td>
+            <td>{{ person.gauge }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}
+
+{% block javascript %}
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#readertable').DataTable({
+        "order": [ 1, 'asc' ],
+        "paging": false,
+        "searching": false,
+        "info": false,
+      });
+      $('#searchInput').keyup(function(){
+        results.search($(this).val()).draw() ;
+      })
+    });
+  </script>
+{% endblock javascript %}

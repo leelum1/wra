@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block head %}
+  <title>New Reading</title>
+  <style media="screen">
+    .form{
+      border: 1px solid black;
+      border-radius:10px;
+      background-color: white;
+    }
+
+    .datefield{
+      margin-bottom: 20px;
+      border-radius: 5px;
+      padding: 5px;
+      height:40px;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'groundwater_app:welldetail' pk=index_no %}">{{ name }}</a>
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'groundwater_app:groundwater' %}">Wells Listing</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>{{ name }}</h1>
+  </div>
+  <div class="row">
+    <div class="col-md-6 col-sm-12">
+      <div class="container">
+        <h3>Instructions</h3>
+        <p>Meterings should be input into the database as soon as possible after
+          the data collection. Technicians input the raw metering data into a spreadsheet
+          that automatically calculates the discharge.</p>
+        <p>To add a metering into the database, fill out the data input fields.
+          Currently, you cannot input more than one metering on this page.</p>
+        <p>If a mistake is made in the form it cannot be undone. You can contact
+          the database administrator to update or delete any invalid data. </p>
+      </div>
+    </div>
+    <div class="col-md-6 col-sm-12">
+      <div class="container form">
+        <h3>Data Input</h3>
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            {{ form.date.label_tag }}<br>
+            {% render_field form.date class='datefield' %}<br>
+            {{ form.reading.label_tag }}
+            {% render_field form.reading class="form-control" %}
+            <small class="form-text text-muted">
+              {{ form.discharge.help_text }}
+            </small>
+          </div>
+          <div style="text-align:center;">
+            <input type="submit" disabled class="btn btn-success" style="width:50%;" value="Save">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+{% block javascript %}
+  <script type="text/javascript">
+    var today = new Date();
+    today.setDate(today.getDate() - 1);
+    console.log(today);
+  </script>
+{% endblock javascript %}

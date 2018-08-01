@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block head %}
+  <title>Caroni</title>
+  <meta name="description" content="">
+  <style media="screen">
+    form{
+      border: 1px solid black;
+      border-radius: 5px;
+      background-color: white;
+      padding: 20px;
+      width: 75%;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'reservoir_app:caroni' %}">Back to Caroni</a>
+  <a class="sidebar-button" href="{% url 'reservoir_app:reservoir' %}">Reservoirs Home</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Caroni Reservoir</h1>
+    <p>Add stuff here</p>
+  </div>
+
+  <div class="container-fluid">
+    <form class="" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        {{ form.date.label_tag }}
+        {% render_field form.date class='form-control' %}
+        {{ form.rainfall.label_tag }}
+        {% render_field form.rainfall class="form-control" %}
+        {{ form.level.label_tag }}
+        {% render_field form.level class="form-control" %}
+        {{ form.production.label_tag }}
+        {% render_field form.production class="form-control" %}
+      </div>
+      <input class="btn btn-success" type="submit" value="Submit">
+    </form>
+  </div>
+{% endblock content %}
+{% block javascript %}
+
+{% endblock javascript %}

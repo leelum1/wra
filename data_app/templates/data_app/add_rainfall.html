@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>Add Rainfall</title>
+    <meta name="description" content="">
+    <style media="screen">
+
+    </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data_app:gaugedetail' pk=code %}">Back to {{ name }} Detail page</a>
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'data_app:gaugelist' %}">Gauge List</a>
+  {% if user.is_management %}
+    <a class="sidebar-button" href="{% url 'admin:index' %}">Add or Edit Gauge</a>
+  {% endif %}
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Add Rainfall - {{ name }}: {{ code }}</h1>
+    <p>On this page you can enter new rainfall values. First select the range of
+      dates for values to be entered. We will check if there are any conflicts, and
+      if there are none, populate the generated table with the data.</p>
+
+    <p>Currently, you cannot edit values that are already in the database for security
+      reasons. If you see that there are incorrect values, please contact the database
+      administrator.</p>
+
+    <p>The database currently has values for {{ start|date:"d M Y" }} to {{ end|date:"d M Y" }}</p>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-7">
+        <h3>Enter rainfall values</h3>
+          <table>
+            <thead>
+              <th>Date</th>
+              <th>Rainfall (mm)</th>
+            </thead>
+            <tbody>
+              {% for date in dates %}
+                <tr>
+                  <td class="date">{{ date|date:"d M Y"}}</td>
+                  <td style="padding: 5px;"><input class="test" type="text" style="width:100%;" oninput="getrain()"></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="dates">
+            <input type="hidden" name="newrain">
+            <button class="btn btn-success" disabled type="button" style="margin-top:20px;" onclick="submit()">Save to Database</button>
+          </form>
+      </div>
+
+      <div class="col-5" style="height:320px; text-align:center; background-color:white; margin-bottom:30px; padding:20px; border-radius:5px;">
+        <h3>Select different dates here</h3>
+        <form action="" method="get" novalidate>
+          <input type="date" class="form-control" id="startdate" name="startdate">
+          <p style="text-align:center;">to</p>
+          <input type="date" class="form-control" id="enddate" name="enddate"><br>
+          <input type="submit" class="btn btn-primary" name="" value="Generate dates">
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock content %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    //Gets current date and puts it into django friendly format
+    function formatDate() {
+      var d = new Date(),
+          month = '' + (d.getMonth() + 1),
+          day = '' + d.getDate(),
+          year = d.getFullYear();
+
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+
+      return [year, month, day].join('-');
+    };
+
+    //default search dates
+    $(document).ready(function(){
+      $('#startdate').val("{{ end|date:"Y-m-d" }}");
+      $('#enddate').val(formatDate());
+    });
+
+    //Send rainfall values to hidden input for a janky workaround
+    function getrain(){
+      var newrain = $('.test').map(function(){
+        return this.value;
+        }).get();
+        $('input[name=newrain]').val(newrain);
+    };
+
+    var dates = $('.date').map(function(){
+      return this.innerHTML;
+      }).get();
+      $('input[name=dates]').val(dates);
+
+  </script>
+{% endblock %}
