@@ -13,6 +13,11 @@
       text-decoration: none;
     }
 
+    p > a {
+      color: blue;
+      text-decoration: underline;
+    }
+
     h4{
       margin-top: 20px;
     }
@@ -31,7 +36,31 @@
 
     img{
       border:1px solid black;
-      height:200px;
+    }
+
+    .images{
+      white-space: nowrap;
+      overflow-x: scroll;
+      margin-top:20px;
+    }
+
+    .card{
+      border: 1px solid black;
+      display: inline-block;
+      max-width: 200px;
+    }
+
+    .card-body{
+      padding: 0;
+    }
+
+    .card-text{
+      background-color: black;
+      color: white;
+      padding: 5px;
+      font-size: 14px;
+      font-style: italic;
+      text-align: center;
     }
   </style>
 {% endblock head %}
@@ -61,6 +90,19 @@
       {{ watershed.description|markdown }}
     {% else %}
       <p>There will be a description of the watershed here.</p>
+    {% endif %}
+
+    {% if pictures %}
+      <div class="images">
+        {% for picture in pictures %}
+          <div class="card">
+            <a href="{{ picture.picture.url }}"><img class="card-img-top" height='150px' src="{{ picture.picture.url }}" alt="Card image cap"></a>
+            <div class="card-body">
+              <p class="card-text">{{ picture.title }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
     {% endif %}
   </div>
 
@@ -163,7 +205,7 @@
       <div class="row" style="text-align:center; margin-top:30px;">
         {% for book in library %}
         <div class="col" style="text-align:center;">
-          <img {% if book.bookcover %} src="{{ book.bookcover.url }}" {% else %} src="{% static 'images/no_preview.png' %}"{% endif %} alt="Book Cover">
+          <img {% if book.bookcover %} src="{{ book.bookcover.url }}" {% else %} src="{% static 'images/no_preview.png' %}"{% endif %} height='200px' alt="Book Cover">
           <p style="text-align:center; margin-top:5px;"><strong>{{ book.title|truncatewords:10 }}</strong>
           <br><em>{{ book.author }}</em></p>
         </div>

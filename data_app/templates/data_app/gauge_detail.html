@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% block head %}
   <meta name="description" content="Data access for the {{ raingauge.name }} rainfall gauge">
   <title>{{ raingauge.name }} Rain Gauge</title>
@@ -8,13 +8,20 @@
   <link rel="stylesheet" href="{% static 'css/rainmap.css' %}">
   <link rel="stylesheet" href="{% static 'css/graph.css' %}">
   <style media="screen">
+    table{
+      margin-bottom: 40px;
+    }
 
+    td > a{
+      text-decoration: none;
+    }
   </style>
 {% endblock head %}
 {% block sidebar %}
   <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
   <a class="sidebar-button" href="{% url 'data_app:gaugelist' %}">Rainfall Gauge List</a>
   <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'spi_app:SPI' %}">Standard Precipitation Index</a>
   <a class="sidebar-button" href="{% url 'data_app:IDF' pk=raingauge.code %}">IDF Curves</a>
   {% if user.is_operations %}
     <a class="sidebar-button" href="{% url 'data_app:addrainfall' %}">Add rainfall</a>
@@ -67,7 +74,7 @@
 
         <div class="container" style="text-align:center;">
           {% if user.is_operations %}
-            <a class="btn btn-primary" href="{% url 'data_app:addrainfall' %}">Add rainfall</a>
+            <a class="btn btn-primary" style="width:50%;" href="{% url 'data_app:addrainfall' %}">Add rainfall</a>
           {% endif %}
         </div>
 
@@ -186,6 +193,9 @@
     <div class="container">
       <h3 style="text-align:center; margin-bottom:20px;">
         Daily Records for {{ startdate|date:"d M Y" }} to {{ enddate|date:"d M Y" }}</h3>
+      <div style="text-align:right;">
+        <a id="copy" onclick="CopyStuff(document.getElementById('dailytable'));">Copy table</a>
+      </div>
       <table id="dailytable" style="width:90%;">
         <thead>
           <th>Date</th>
@@ -200,15 +210,15 @@
           </tr>
         {% endfor %}
       </table>
-      <div style="text-align:center;">
-        <button class="btn btn-primary" style="width:90%; "onclick="copyFunction(dailytable)">Copy table</button>
-      </div>
     </div>
 
   {% elif monthlyrecords %}
     <div class="container">
       <h3 style="text-align:center;">
         Monthly Records  for {{ startdate|date:"d M Y" }} to {{ enddate|date:"d M Y" }}</h3>
+      <div style="text-align:right;">
+        <a id="copy" onclick="CopyStuff(document.getElementById('monthtable'));">Copy table</a>
+      </div>
       <table id="monthtable" style="width:90%; margin-bottom:0;">
         <thead>
           <th>Year</th>
@@ -243,15 +253,15 @@
           </tr>
         {% endfor %}
       </table>
-      <div style="text-align:center;">
-        <button class="btn btn-primary" style="width:90%; "onclick="copyFunction(monthtable)">Copy table</button>
-      </div>
     </div>
 
   {% elif annualrecords %}
     <div class="container">
       <h3 style="text-align:center; margin-bottom:20px;">
         Annual Records for {{ startdate|date:"d M Y" }} to {{ enddate|date:"d M Y" }}</h3>
+      <div style="text-align:right;">
+        <a id="copy" onclick="CopyStuff(document.getElementById('annualtable'));">Copy table</a>
+      </div>
       <table id="annualtable" style="width:90%;">
         <thead >
           <th>Year</th>
@@ -268,9 +278,6 @@
           </tr>
         {% endfor %}
       </table>
-      <div style="text-align:center;">
-        <button class="btn btn-primary" style="width:90%; "onclick="copyFunction(annualtable)">Copy table</button>
-      </div>
     </div>
   {% endif %}
 {% endblock content %}
@@ -292,9 +299,61 @@
     var easting = {{ east }};
   </script>
 
-  <script src="{% static 'js/rainmap.js' %}"></script>
-
   <script type="text/javascript">
+    // Mapbox access token
+    mapboxgl.accessToken = 'pk.eyJ1IjoibGVlbHVtMSIsImEiOiJjamFzNHM0cmo0bmduMnFwbHh0MXNweW5jIn0.1fUr70BuY4Kk4BERLB5Pkg';
+
+    //Initialize map object
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/basic-v9',
+      center: [easting, northing],
+      zoom: 12
+    });
+
+    //Constrain map extent
+    map.setMaxBounds([[-62.2, 9.8],[-60.5, 11.0]]);
+
+    //Scale
+    var scale = new mapboxgl.ScaleControl({
+        maxWidth: 80,
+        unit: 'metric'
+    });
+    map.addControl(scale);
+
+    //Initialize overlay layers
+    map.on('load', function() {
+      map.addSource('Rainfall-3f50n1', {
+            type: 'vector',
+            url: 'mapbox://leelum1.8zrmbkd9'
+        });
+
+      map.addLayer({
+          'id': 'Rainfall',
+          'type': 'circle',
+          'source': 'Rainfall-3f50n1',
+          'source-layer': 'Rainfall-3f50n1',
+          'layout': {
+              'visibility': 'visible',
+          },
+          'paint': {
+            'circle-radius': 5,
+            'circle-color': 'red'
+          }
+      });
+    });
+
+
+    // Change the cursor to a pointer.
+    map.on('mouseenter', 'Rainfall', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a cursor.
+    map.on('mouseleave', 'Rainfall', function () {
+        map.getCanvas().style.cursor = '';
+    });
+
     map.on('click', 'Rainfall', function (e) {
       var coordinates = e.features[0].geometry.coordinates.slice();
       while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -319,8 +378,123 @@
     var graphtitle = "{{ raingauge.name }}";
     var rainjson = JSON.parse('{{ rainjson | escapejs }}');
     var max_rain = JSON.parse('{{ max_json | escapejs }}');
+    console.log(rainjson);
   </script>
 
-  <script src="{% static 'js/rainfall.js' %}"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      var margin = {top: 40, right: 30, bottom: 30, left: 60},
+          width = 0.8 * document.getElementById("graph").offsetWidth - margin.right - margin.left,
+          height = 0.5 * width;
+
+      var parseDate = d3.time.format("%m/%d/%Y").parse;
+
+      var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      var startdate = parseDate(rainjson[11]["x"]),
+          enddate = parseDate(rainjson[0]["x"]);
+
+      var x = d3.time.scale()
+          .range([0, width])
+          .domain([startdate, enddate]);
+
+      var y = d3.scale.linear()
+          .range([height, 0])
+          .domain([0, max_rain + 10]);
+
+      var xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom")
+          .ticks(20)
+          .tickFormat(d3.time.format("%b-%Y"));
+
+      var yAxis = d3.svg.axis()
+          .scale(y)
+          .orient("left")
+
+      function make_x_axis() {
+          return d3.svg.axis()
+              .scale(x)
+              .orient("bottom")
+              .ticks(12)
+      }
+
+      function make_y_axis() {
+          return d3.svg.axis()
+              .scale(y)
+              .orient("left")
+              .ticks(10)
+      }
+
+      var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+          return "<span>" + months[parseDate(d.x).getMonth()] + " " + parseDate(d.x).getFullYear() + " : " + d.y + " mm</span>";
+        });
+
+      //Graph boundaries
+      var svg = d3.select("svg")
+          .attr("width", width + margin.right + margin.left)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      svg.call(tip);
+
+      //grid
+      svg.append("g")
+          .attr("class", "grid")
+          .call(make_y_axis()
+              .tickSize(-width, 0, 0)
+              .tickFormat("")
+          )
+
+      //data
+      svg.selectAll("bar")
+          .data(rainjson)
+        .enter().append("rect")
+          .attr("class", "bar")
+          .attr("x", function(d) { return x(parseDate(d.x)); })
+          .attr("width", 20)
+          .attr("y", function(d) { return y(d.y); })
+          .attr("height", function(d) { return height - y(d.y); })
+          .on('mouseover', tip.show)
+          .on('mouseout', tip.hide);
+
+      //x-axis
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis)
+          .append("text")
+          .attr("x", width / 2 )
+          .attr("y", height - margin.bottom)
+          .attr("dy", "1em")
+          .style("font-size", "12px")
+          .text("Reliability");
+
+      //y-axis
+      svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+          .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left + 10)
+          .attr("x",0 - (height / 2))
+          .attr("dy", "1em")
+          .style("font-size", "12px")
+          .text("Rainfall (mm)");
+
+      //Chart title
+      svg.append("text")
+              .attr("x", (width / 2))
+              .attr("y", 0 - (margin.top / 2))
+              .attr("text-anchor", "middle")
+              .style("font-size", "16px")
+              .style("text-decoration", "underline")
+              .text("Rainfall at " + graphtitle + " for the past 12 months");
+    });
+  </script>
 
 {% endblock javascript %}

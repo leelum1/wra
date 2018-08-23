@@ -73,7 +73,7 @@
       <div class="col-lg-4 col-md-6 col-sm-12">
         <h4 id="groundwater">Groundwater</h4>
         <ol>
-          {% for sop in groudnwater %}
+          {% for sop in groundwater %}
             <li><a href="{% url 'library_app:sop-detail' slug=sop.slug %}">{{ sop.title }}</a></li>
           {% endfor %}
         </ol>

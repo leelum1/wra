@@ -18,6 +18,7 @@
   <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
   <a class="sidebar-button" href="{% url 'library_app:sop' %}">Rainfall SOPs</a>
   <a class="sidebar-button" href="{% url 'data_app:compare' %}">Compare Gauges</a>
+  <a class="sidebar-button" href="{% url 'spi_app:SPI' %}">Standard Precipitation Index</a>
   {% if user.is_operations %}
     <a class="sidebar-button" href="{% url 'data_app:readers' %}">Readers</a>
   {% endif %}
@@ -29,8 +30,10 @@
 {% block content %}
   <div class="container-fluid">
     <h1>Rainfall Gauge Network</h1>
-    <p class="lead">This is a list of all {{ gauges.count }} currently operating gauges in the monitoring
-      network. Click on the table headings to sort.</p>
+    <p>This is a list of all {{ gauges.count }} currently operating gauges in the monitoring
+      network. Click on any gauge to access data, basic statistics, intensity-duration-frequecy
+      analysis, and standard precipitation indexes. Unfortunately, only pot gauge data
+      is currently available. Click on the table headings to sort. </p>
     <input id="searchInput" class="form-control" type="text" name="name" placeholder="Search gauges here">
 
     <div style="text-align:right;">
@@ -73,4 +76,4 @@
       })
     });
   </script>
-{% endblock %}
+{% endblock javascript %}

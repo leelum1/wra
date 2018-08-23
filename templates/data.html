@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
+{% load static %}
 {% block head %}
   <meta name="description" content="Portal to access rainfall, streamflow, groundwater, and water quality data for Trinidad and Tobago">
   <title>Water Resources Data, Trinidad and Tobago</title>
@@ -69,9 +69,6 @@
       <li class="nav-item" style="position: relative; float: left; display: block; right: 50%;">
         <a class="nav-link" href="{% url 'quality_app:quality' %}">Water Quality</a>
       </li>
-      <li class="nav-item" style="position: relative; float: left; display: block; right: 50%;">
-        <a class="nav-link" href="{% url 'reservoir_app:reservoir' %}">Reservoirs</a>
-      </li>
     </ul>
   </nav>
 
@@ -84,7 +81,6 @@
       of the hydrological network. All data accessed on this website is subject to
       <a href="{% url 'legal' %}">our terms and conditions.</a></p>
   </div>
-
   <div class="container-fluid datatype" style="background-color:white;">
     <div class="row no-gutters">
       <div class="col-lg-5 col-md-12">
@@ -119,9 +115,7 @@
             <div class="col" style="text-align:center;">
               <a class="btn btn-info" href="{% url 'streamflow_app:metering_list' %}">Current Meterings</a>
             </div>
-            <div class="col" style="text-align:center;">
-              <a class="btn btn-secondary" href="{% url 'streamflow_app:fuess_list' %}" style="width:80%; margin-top:20px;">Fuess Gauges</a>
-            </div>
+
           </div>
         </div>
       </div>
@@ -180,4 +174,22 @@
       </div>
     </div>
   </div>
+
+  <div class="container-fluid datatype">
+    <div class="row no-gutters">
+      <div class="col-lg-5 col-md-12">
+        <img class="dataimg" src="{% static 'images/data_quality.png' %}" alt="Groundwater field?">
+      </div>
+      <div class="col-lg-7 col-md-12">
+        <div class="rightdesc">
+          <h2>Evaporation</h2>
+          <p>Evaporation stations</p>
+          <div style="text-align:center;">
+            <a href="{% url 'evap_app:evap-list' %}" class="btn btn-info">Evaporation Stations</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {% endblock body_block %}

@@ -19,8 +19,14 @@
       padding-left: 5%;
       padding-right: 5%;
     }
+
     a{
       text-decoration: none;
+    }
+
+    p > a{
+      color:blue;
+      text-decoration: underline;
     }
 
     #map{
@@ -43,7 +49,10 @@
     <p>There are 69 watersheds in Trinidad(54) and Tobago(15). The watersheds are
       divided into hydrometric areas, of which there are 9 in Trinidad and 5 in Tobago.
       To learn more about watersheds,
-      <a href="https://water.usgs.gov/edu/watershed.html">click here to visit the USGS Water Science School.</a></p>
+      <a href="https://water.usgs.gov/edu/watershed.html">click here to visit the
+         USGS Water Science School.</a>
+      To view a list of the rivers in Trinidad and Tobago
+      <a href="{% url 'rivers_app:list' %}">click here.</a></p>
     <input id="searchInput" class="form-control" type="text" name="name" placeholder="Search for watershed here">
   </div>
 
@@ -104,9 +113,73 @@
     });
   </script>
 
-  <script src="{% static 'js/watershed.js' %}"></script>
-
   <script type="text/javascript">
+    // Mapbox access token
+    mapboxgl.accessToken = 'pk.eyJ1IjoibGVlbHVtMSIsImEiOiJjamFzNHM0cmo0bmduMnFwbHh0MXNweW5jIn0.1fUr70BuY4Kk4BERLB5Pkg';
+
+    //Initialize map object
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/basic-v9',
+      center: [-61.4, 10.45],
+      zoom: 8
+    });
+
+    //Constrain map extent
+    map.setMaxBounds([[-62.2, 9.8],[-60.3, 11.4]]);
+
+    //Scale
+    var scale = new mapboxgl.ScaleControl({
+        maxWidth: 80,
+        unit: 'metric'
+    });
+    map.addControl(scale);
+
+    //Initialize overlay layers
+    map.on('load', function() {
+      map.addSource('Watersheds-3dt1kb', {
+            type: 'vector',
+            url: 'mapbox://leelum1.26t26vhq'
+        });
+
+      map.addLayer({
+          'id': 'Watersheds',
+          'type': 'fill',
+          'source': 'Watersheds-3dt1kb',
+          'source-layer': 'Watersheds-3dt1kb',
+          'layout': {
+              'visibility': 'visible',
+          },
+          'paint': {
+              'fill-color': 'rgba(0, 0, 0, 0)',
+              'fill-outline-color': 'rgba(200, 100, 240, 1)'
+          }
+      });
+
+      map.addLayer({
+        "id": "watersheds-highlighted",
+        "type": "fill",
+        'source': 'Watersheds-3dt1kb',
+        'source-layer': 'Watersheds-3dt1kb',
+        "paint": {
+            "fill-outline-color": "#484896",
+            "fill-color": "#6e599f",
+            "fill-opacity": 0.75
+        },
+        "filter": ["in", "NAME", ""]
+      });
+    });
+
+    // Change the cursor to a pointer.
+    map.on('mouseenter', 'Watersheds', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a cursor.
+    map.on('mouseleave', 'Watersheds', function () {
+        map.getCanvas().style.cursor = '';
+    });
+
     //Watersheds highlight
     map.on('click', 'Watersheds', function (e) {
       var slug = e.features[0].properties.slug;

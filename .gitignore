@@ -5,3 +5,4 @@ images/
 *.zip
 secrets.json
 robots.txt
+migrations/

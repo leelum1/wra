@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.views.generic import TemplateView, ListView, DetailView
 from django.core.mail import send_mail
 from django.contrib.auth import login, authenticate
@@ -5,7 +6,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from .models import Book, SOP
-from datetime import datetime
 
 # Create your views here.
 class LibraryTemplateView(TemplateView):

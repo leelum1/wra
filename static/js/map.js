@@ -28,7 +28,7 @@ function getUniqueFeatures(array, comparatorProperty) {
 //Layer features
 function LayerDetail(layer){
   var features = map.queryRenderedFeatures(layer);
-  if (layer == 'Watersheds' || layer == 'Rainfall' || layer == 'Intakes' || layer == 'Streamflow' || layer == 'Reservoirs'){
+  if (layer == 'Watersheds' || layer == 'Rainfall' || layer == 'Rivers' || layer == 'Intakes' || layer == 'Streamflow' || layer == 'Reservoirs'){
     var uniqueFeatures = getUniqueFeatures(features, "Name");
   } else if(layer =='Wells'){
     var uniqueFeatures = getUniqueFeatures(features, "Index");
@@ -47,6 +47,10 @@ function ToggleLayer(layer){
       $("button:contains(" + layer + ")").toggleClass('active');
       // if (layer == 'Watersheds'){
       //   map.setFilter("watersheds-highlighted", ['in', 'NAME', ""])};
+      if (layer == 'Rivers'){
+        map.setLayoutProperty('RiverSymbols', 'visibility', 'none')};
+      if (layer == 'Isohyetal'){
+        map.setLayoutProperty('IsohyetalSymbols', 'visibility', 'none')};
       $('.map-overlay').attr('style','display:none');
       if (arrow) {
         arrow.disabled = true;
@@ -54,10 +58,19 @@ function ToggleLayer(layer){
   } else {
       $("button:contains(" + layer + ")").toggleClass('active');
       map.setLayoutProperty(layer, 'visibility', 'visible');
+      if (layer == 'Rivers'){
+        map.setLayoutProperty('RiverSymbols', 'visibility', 'visible')};
+      if (layer == 'Isohyetal'){
+        map.setLayoutProperty('IsohyetalSymbols', 'visibility', 'visible')};
       if (arrow) {
         arrow.disabled = false;
       }
   }
+};
+
+//Zoom out
+function zoomOut(){
+  map.flyTo({center: [-61.5, 10.5], zoom: 8});
 };
 
 //Map Preview
@@ -87,7 +100,7 @@ var styles = ['basic-v9', 'satellite-v9']
 var map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/' + styles[0],
-  center: [-61.5, 10.7],
+  center: [-61.5, 10.5],
   zoom: 8
 });
 
@@ -100,6 +113,15 @@ var scale = new mapboxgl.ScaleControl({
     unit: 'metric'
 });
 map.addControl(scale);
+
+
+//Geolocation control
+map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true
+}));
 
 var previewUpdate
 
@@ -164,6 +186,27 @@ var allLayers = [{
       'paint': {
         'circle-radius': 5,
         'circle-color': 'red'
+      }
+    }
+  }, {
+  source: {
+        type: 'vector',
+        url: 'mapbox://leelum1.cx1mwqqk'
+    },
+  layer: {
+      'id': 'Rivers',
+      'type': 'line',
+      'source': 'Rivers-3omzdt',
+      'source-layer': 'Rivers-3omzdt',
+      "minzoom": 8,
+      "layout": {
+          "line-join": "round",
+          "line-cap": "round",
+          'visibility': 'none',
+      },
+      "paint": {
+          "line-color": "#1163C8",
+          "line-width": 2
       }
     }
   }, {
@@ -268,6 +311,57 @@ map.on('style.load', function() {
         map.addLayer(me.layer)
     }
     renderListings([]);
+
+    map.addLayer({
+      "id": "RiverSymbols",
+      "type": "symbol",
+      "source": "Rivers-3omzdt",
+      'source-layer': 'Rivers-3omzdt',
+      "minzoom": 8,
+      "layout": {
+        "symbol-placement": "line",
+        "text-font": ["Open Sans Italic"],
+        "text-field": '{Name}' + " River", // part 2 of this is how to do it
+        "text-size": 12,
+        "text-anchor": "bottom",
+        "text-max-angle": 30,
+        "visibility": 'none'
+      }
+    });
+
+    map.addLayer({
+      'id': 'Rivers-highlighted',
+      'type': 'line',
+      'source': 'Rivers-3omzdt',
+      'source-layer': 'Rivers-3omzdt',
+      "minzoom": 8,
+      "layout": {
+          "line-join": "round",
+          "line-cap": "round",
+      },
+      "paint": {
+          "line-color": "#F60F08",
+          "line-width": 2
+      },
+      "filter": ["in", "Name", ""]
+    });
+
+    map.addLayer({
+      "id": "IsohyetalSymbols",
+      "type": "symbol",
+      "source": "Isohyetal-4gmub3",
+      'source-layer': 'Isohyetal-4gmub3',
+      "minzoom": 8,
+      "layout": {
+        "symbol-placement": "line",
+        "text-font": ["Open Sans Italic"],
+        "text-field": '{Contour}' + " mm", // part 2 of this is how to do it
+        "text-size": 12,
+        "text-anchor": "bottom",
+        "text-max-angle": 30,
+        "visibility": 'none'
+      }
+    });
 });
 
 // Change the cursor to a pointer.
@@ -337,19 +431,19 @@ var listingEl = document.getElementById('feature-listing');
 // Create a popup, but don't add it to the map yet.
 var popup = new mapboxgl.Popup({});
 
-map.on('mouseenter', 'Isohyetal', function(e) {
-    // Change the cursor style as a UI indicator.
-    map.getCanvas().style.cursor = 'pointer';
-
-    var coordinates = e.lngLat;
-    var description = e.features[0].properties.Contour;
-
-    popup.setLngLat(coordinates)
-        .setHTML(description + " mm")
-        .addTo(map);
-});
-
-map.on('mouseleave', 'Isohyetal', function() {
-    map.getCanvas().style.cursor = '';
-    popup.remove();
-});
+// map.on('mouseenter', 'Isohyetal', function(e) {
+//     // Change the cursor style as a UI indicator.
+//     map.getCanvas().style.cursor = 'pointer';
+//
+//     var coordinates = e.lngLat;
+//     var description = e.features[0].properties.Contour;
+//
+//     popup.setLngLat(coordinates)
+//         .setHTML(description + " mm")
+//         .addTo(map);
+// });
+//
+// map.on('mouseleave', 'Isohyetal', function() {
+//     map.getCanvas().style.cursor = '';
+//     popup.remove();
+// });

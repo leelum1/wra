@@ -1,17 +1,44 @@
 {% extends "base.html" %}
-{% block title %}
-  <meta name="description" content="Terms and conditions of using the WRA website">
+{% block head %}
+  <meta name="description" content="Terms and conditions of using the waterresourcestt.com website">
   <title>Legal</title>
-{% endblock %}
+  <style media="screen">
+    blockquote{
+      font-style: italic;
+      padding: 3%;
+    }
+  </style>
+{% endblock head %}
 {% block body_block %}
   <div class="container">
-    <h1>Legal</h1>
+    <h1>Terms and Conditions of Use of this Website</h1>
     <p>This website is in no way affiliated with the Water and Sewerage Authority
       of Trinidad and Tobago, or any other government entity. This website was made
       as part of the requirement for a Msc in geoinformatics at the University of
       the West Indies, St. Augustine campus. As such, any information obtained from
-      this website cannot be considered to be accurate or reliable.</p>
+      this website cannot be considered to be accurate or reliable. Additionally,
+      all data on this website was generated using a random algorithm.</p>
+    <p>I would also like to cite section 5.21 of the National Integrated Water Resources
+      Management Policy for the Government of Trinidad and Tobago:</p>
+    <blockquote cite="http://www.mpu.gov.tt/home/files/Draft%20Revised%20National%20IWRM%20Policy_March2017.pdf">
+      "5.21.2 The Freedom of Information Act establishes a high general right to access
+      information in the possession of public authorities. Consistent with that Act,
+      Government will support meaningful and effective public participation in water
+      resources management by providing the public with timely and accurate information
+      about both treated and ambient water quality and quantity."
+    </blockquote>
+    <p>Some people may then direct you to section 6.9 of the policy document, which reads:</p>
+    <blockquote>"The Government will establish a standardised, integrated electronic water
+      resources information management system for the collection, processing,
+      storage, analysis, and retrieval of information to inform the decision
+      making process. Basic information in the system will be vailable to the
+      public at a nominal charge. More techincal and value-added information will
+      attract an appropriate charge."</blockquote>
+
+    <p>I now invite you to discuss whether these two statements agree or contradict
+      each other, or any other points you would like to draw.</p>
+
     <p>Requests for similar data found on this website must be made through the
       Water Resources Agency, Trinidad and Tobago, by form of a letter addressed to the Head.</p>
   </div>
-{% endblock %}
+{% endblock body_block %}

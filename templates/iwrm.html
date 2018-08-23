@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+  <title>Integrated Water Resources Management in Trinidad and Tobago</title>
+  <meta name="description" content="The Water Resources Agency of Trinidad and Tobago
+  is responsible for the implementation of integrated water resources management,
+  in an effort to sustainably and effectively manage the country's water resources.">
+  <style media="screen">
+    blockquote{
+      font-style: italic;
+      padding: 2% 5% 3% 5%;
+    }
+
+    q{
+      font-style: italic;
+    }
+
+    p > a{
+      color: blue;
+      text-decoration: underline;
+    }
+
+    .pie{
+      text-align: center;
+    }
+  </style>
+{% endblock head %}
+{% block body_block %}
+  <div class="container-fluid">
+    <h1 class="display-4">Integrated Water Resources Management</h1>
+    <p>The Water Resources Agency of Trinidad and Tobago is responsible for the implementation
+      of Integrated Water Resources Management (IWRM) throughout the country, in an effort to sustainably and
+      effectively manage the country's water resources. IWRM is defined as:
+      <blockquote cite="https://www.gwp.org/en/GWP-CEE/about/why/what-is-iwrm/">
+        A process which promotes the coordinated development and management of water,
+        land and related resources in order to maximise economic and social welfare
+        in an equitable manner without compromising the sustainability of vital
+        ecosystems and the environment.
+      </blockquote>
+    </p>
+  </div>
+
+  <div class="container-fluid" style="padding-top:30px; padding-bottom:50px; background-color:white;">
+    <div class="row">
+      <div class="col-lg-7 col-md-12">
+        <p title="A clever person once asked: Why does WASA dig the roads after the Ministry of Works and Transport has paved it? The official answer in all its glory: The machinery used in the road paving exercise are heavy and quite often create tremors that cause leaks in our pipelines buried under the roadway. When this occurs WASA must dig the roadway to effect repairs to the pipelines.">There are three sources of water in Trinidad and Tobago: Surface water
+          (which include river intakes, springs, and water impounded by resevoirs):
+          60%, groundwater: 28%, and desalinated water: 12%. Unfortuantely, the majority
+          of water that is treated and supplied by WASA is lost as Unaccounted-For-Water,
+          which is water that is lost through leakage or irregular practices between
+          entering a distribution system and reach the legitimate users. IWRM is
+          needed to manage this water as WASA works to reduce the amount of water lost.</p>
+
+        <div class="" style="margin-top:50px;">
+          <h4>National IWRM Policy</h4>
+          <p>The Water Resources Management Unit of the WRA, along with the Ministry of
+            Public Utilities has developed a National IWRM Policy, that is to be used to guide
+            the management of water resources in the country. The Policy was first published
+            in 2005, and revised in 2017. A copy of
+            <a href="http://www.mpu.gov.tt/home/files/Draft%20Revised%20National%20IWRM%20Policy_March2017.pdf" target="_blank"> this policy can be viewed here.</a>
+          </p>
+
+          <p>This policy provides guidelines on how the water resources of the country
+            are to be used, which the Government of Trinidad and Tobago can refer to
+            when legislation regarding water resources needs to be written or edited.
+            Other topics included in the policy are abstraction licensing, ambient
+            water quality standards, allocation prioritization, wastewater treatment,
+            and flood management.</p>
+        </div>
+
+        <div class="" style="margin-top:50px;">
+          <h4>Adopt-A-River Programme</h4>
+          <p>The
+            <a href="http://www.adoptarivertt.com/">Adopt-A-River Programme</a>
+            is an organisation that promotes the principles of IWRM. The objective
+            of the program is:
+          </p>
+          <blockquote cite="http://www.adoptarivertt.com/archived/about/objectives/">To
+              build awareness concerning issues impacting local watersheds and to
+              facilitate the participation of public and private sector entities
+              in sustainable and holistic projects aimed at improving the status
+              of rivers and watersheds throughout Trinidad and Tobago</q>
+          </blockquote>
+          <p>Visit their website to learn more.</p>
+        </div>
+      </div>
+      <div class="col-lg-5 col-md-12 svg">
+        <div class="">
+          <h5 style="text-align:center;">Sources of Water Supply in Trinidad and Tobago</h5>
+          <div class="pie" id="svg-source"></div>
+        </div>
+        <div class="" style="margin-top:30px;">
+          <h5 style="text-align:center;">Water Demand in Trinidad and Tobago</h5>
+          <div class="pie" id="svg-demand"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock body_block %}
+{% block javascript %}
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="{% static 'js/d3pie.js' %}"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      var pie = new d3pie("svg-source", {
+        "size": {
+          "canvasWidth": 500,
+          "canvasHeight": 300,
+          "pieOuterRadius": "80%"
+        },
+        "data": {
+          "content": [
+            {'label': 'Surface', 'value': 60},
+            {'label': 'Groundwater', 'value': 28},
+            {'label': 'Desalination', 'value': 12},
+            ]
+        }
+      });
+    });
+  </script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      var pie = new d3pie("svg-demand", {
+        "size": {
+          "canvasWidth": 500,
+          "canvasHeight": 300,
+          "pieOuterRadius": "80%"
+        },
+        "data": {
+          "content": [
+            {'label': 'Domestic', 'value': 38},
+            {'label': 'Industrial', 'value': 18},
+            {'label': 'Agriculture', 'value': 3},
+            {'label': 'Unaccounted', 'value': 41},
+            ]
+        }
+      });
+    });
+  </script>
+{% endblock javascript %}

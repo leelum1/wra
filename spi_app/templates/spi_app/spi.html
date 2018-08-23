@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+  <title>Standard Precipitation Index</title>
+  <meta name="description" content="">
+  <style media="screen">
+    .values{
+      text-align: center;
+    }
+  </style>
+{% endblock head %}
+{% block sidebar %}
+  <a class="sidebar-button" href="{% url 'data' %}">Data home</a>
+  <a class="sidebar-button" href="{% url 'data_app:gaugelist' %}">Rainfall Gauge List</a>
+  <a class="sidebar-button" href="{% url 'map_app:map' %}">Map</a>
+  <a class="sidebar-button" href="{% url 'data' %}">IDF Curves</a>
+{% endblock sidebar %}
+{% block content %}
+  <div class="container-fluid">
+    <h1>Standard Precipitation Index</h1>
+    <p>The Standard Precipitation Index (SPI) is one of many indices for categorizing drought. SPI values can be calculated
+      <a href="http://drought.unl.edu/droughtmonitoring/SPI/SPIProgram.aspx"> using the SPI program from the National Drought Mitigation Center</a>
+       . For further information on the SPI and the SPI Program,
+      <a href="http://drought.unl.edu/Home.aspx">visit the National Drought Mitigation Center.</a>
+      The SPI is solely based on precipitation data and is the cumulative probability of a given rainfall event.
+    </p>
+  </div>
+
+  <div class="container-fluid">
+    <form class="spiform" action="{% url 'spi_app:SPI' %}" method="get">
+      <div class="row">
+        <div class="col-md-6 col-sm-12">
+          <select class="form-control" name="gauge" id="gauge-form">
+            {% for gauge in gauges %}
+              {% if gauge == selected_gauge.name %}
+                <option selected='selected' value="{{ gauge }}">{{ gauge }}</option>
+              {% else %}
+                <option value="{{ gauge }}">{{ gauge }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <input class="form-control" id="start-form" type="number" name="start" placeholder="Start year">
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <input class="form-control" id="end-form" type="number" name="end" placeholder="End year">
+        </div>
+      </div>
+      <div class="" style="text-align:center; margin-top:20px;">
+        <input class="btn btn-primary" style="width:100%;" type="submit" value="Submit!">
+      </div>
+    </form>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        {% if selected_gauge %}
+          <a href="{% url 'data_app:gaugedetail' pk=selected_gauge.code %}" style="text-decoration:none;"><h4>{{ selected_gauge.name }}</h4></a>
+          <div style="text-align:right;">
+            <a id="copy" onclick="CopyStuff(document.getElementById('spitable'));">Copy table</a>
+          </div>
+          <table id="spitable">
+            <thead>
+              <th>Year</th>
+              <th>Month</th>
+              <th>1-Month</th>
+              <th>3-Month</th>
+              <th>6-Month</th>
+              <th>12-Month</th>
+            </thead>
+            <tbody>
+              {% for x in data %}
+                <tr>
+                  <td>{{ x.year }}</td>
+                  <td>{{ x.to_months }}</td>
+                  <td>{% if x.one_month > -99 %}{{ x.one_month }}{% else %} - {% endif %}</td>
+                  <td>{% if x.three_month > -99 %}{{ x.three_month }}{% else %} - {% endif %}</td>
+                  <td>{% if x.six_month > -99 %}{{ x.six_month }}{% else %} - {% endif %}</td>
+                  <td>{% if x.twelve_month > -99 %}{{ x.twelve_month }}{% else %} - {% endif %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      </div>
+      <div class="col">
+        <h4>SPI Values</h4>
+        <p>The US National Drought Mitigation Center defines a drought event as any
+          time the SPI is continuously negative and reaches an intensity of -1.0 or
+          less. The event ends when the SPI becomes positive. Each drought event,
+          therefore, has a duration defined by its beginning and end, and an intensity
+          for each month that the event continues. </p>
+        <table>
+          <thead>
+            <th>Value</th>
+            <th>Description</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="values">2.0+</td>
+              <td>Extremely Wet</td>
+            </tr>
+            <tr>
+              <td class="values">1.5 to 1.99</td>
+              <td>Very Wet</td>
+            </tr>
+            <tr>
+              <td class="values">1.0 to 1.49</td>
+              <td>Moderately Wet</td>
+            </tr>
+            <tr>
+              <td class="values">-0.99 to 0.99</td>
+              <td>Near Normal</td>
+            </tr>
+            <tr>
+              <td class="values">-1.0 to -1.49</td>
+              <td>Moderately Dry</td>
+            </tr>
+            <tr>
+              <td class="values">-1.5 to -1.99</td>
+              <td>Severely Dry</td>
+            </tr>
+            <tr>
+              <td class="values">< -2.0</td>
+              <td>Extremely Dry</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>The one month SPI compares the rainfall in a given month to the same month
+          from all the years of prior data. This SPI can indicate a meteorological
+          drought.
+        </p>
+
+        <p>The three month SPI is useful in reflecting short term moisture conditions.
+          This SPI is suited to determine agricultural drought in an area.
+        </p>
+
+        <p>The six month SPI indicates medium term trends in precipitation within
+          the same six month period over the historical record. This SPI is very
+          effective in showing the precipitation over the dry and wet seasons. This
+          means, it can show how a dry season in a particular year compares to historical
+          dry seasons. The same analysis can be performed using the wet season. The
+          six month SPI can be used to determine a hydrological drought by also comparing
+          the streamflow and reservoir levels.
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+{% block javascript %}
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      results = $('#spitable').DataTable({
+        "order": [ 0, 'asc' ],
+        "paging": false,
+        "searching": true,
+        "info": false,
+        "dom": 'lrtip',
+      });
+      $('#searchInput').keyup(function(){
+        results.search($(this).val()).draw() ;
+      })
+    });
+  </script>
+
+  <script type="text/javascript">
+  //Hightlights SPI values
+    $(document).ready(function() {
+      const cells = $('td');
+      for (var i = 0; i < cells.length; i++) {
+        if (cells[i].innerHTML > 1 && cells[i].innerHTML < 5) {       //wet year
+          cells[i].style.backgroundColor = '#4482CD'
+        } else if (cells[i].innerHTML < -1) {       //dry year
+          cells[i].style.backgroundColor = '#FC5050'
+        };
+      };
+    });
+  </script>
+
+  <script src="{% static 'js/csrf.ajax.js' %}"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      // var Form = $(".spiform");
+      // var FormMethod = Form.attr("method");
+      // var FormEndpoint = Form.attr("action");
+      // Form.submit(function(event){
+      //   event.preventDefault();
+      //   console.log($('#gauge-form').val());
+      //   $.ajax({
+      //     method: FormMethod,
+      //     url: FormEndpoint,
+      //     data: { gauge : $('#gauge-form').val()},
+      //     success: function(data){
+      //
+      //     },
+      //     error: function(error){
+      //       console.log(error);
+      //       alert({
+      //         title: "Oops!",
+      //         content: "An error occurred",
+      //         theme: "modern",
+      //       })
+      //     }
+      //   });
+      // });
+    });
+  </script>
+{% endblock javascript %}

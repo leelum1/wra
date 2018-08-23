@@ -35,6 +35,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_secret('SECRET_KEY')
 
+GOOGLE_RECAPTCHA_SECRET_KEY = get_secret('GOOGLE_RECAPTCHA')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -53,23 +55,23 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'asset_app',
+    'blog_app',
     'data_app',
+    'evap_app',
     'groundwater_app',
     'library_app',
     'licensing_app',
     'map_app',
     'quality_app',
     'reservoir_app',
+    'rivers_app',
+    'spi_app',
     'streamflow_app',
     'watershed_app',
     'widget_tweaks',
     'admin_honeypot',
     'django_markdown2',
     'markdownx',
-    'health_check',
-    'health_check.db',
-    'health_check.cache',
-    'health_check.storage',
     'hitcount',
     'storages',
 ]
@@ -134,6 +136,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+USE_THOUSAND_SEPARATOR = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/

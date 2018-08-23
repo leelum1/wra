@@ -3,7 +3,7 @@ from data_app.models import RainGauge
 from streamflow_app.models import FuessGauge, MeteringSite
 from groundwater_app.models import Well
 from library_app.models import Book
-from .models import Watershed
+from .models import Watershed, Picture
 
 # Create your views here.
 class WatershedListView(ListView):
@@ -18,6 +18,7 @@ class WatershedDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ctx = super(WatershedDetailView, self).get_context_data(**kwargs)
+        ctx['pictures'] = Picture.objects.filter(watershed=self.get_object())
         ctx['rainfall'] = RainGauge.objects.filter(watershed=self.get_object())
         ctx['fuess'] = FuessGauge.objects.filter(watershed=self.get_object())
         ctx['meterings'] = MeteringSite.objects.filter(watershed=self.get_object())

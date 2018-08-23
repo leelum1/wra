@@ -24,7 +24,7 @@ function CopyStuff(el) {
 
 //When user scrolls from the top of page, scroll up button is displayed
 function scrollFunction() {
-  if (window.pageYOffset > 0) {
+  if (window.pageYOffset > 0 && $(window).width() > 768) {
       $("#topBtn").attr("style", "display:block");
       $("#topbtn").attr("style", "display:block");
       $(".sidebar").css({

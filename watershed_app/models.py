@@ -34,3 +34,19 @@ class Watershed(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Picture(models.Model):
+    title = models.CharField(max_length=512)
+    watershed = models.ForeignKey(Watershed, on_delete=models.CASCADE)
+    photographer = models.CharField(max_length=225, null=True, blank=True)
+    capture_date = models.DateTimeField(null=True, blank=True)
+    uploaddate = models.DateTimeField(auto_now_add=True)
+    picture = models.ImageField(upload_to='watersheds/pictures/', max_length=225, help_text='Vertical height of 500px or size of 100 kB.')
+    description = models.TextField(null=True, blank=True)
+
+    def get_absolute_url(self):
+        return reverse('watershed_app:detail', args=[str(self.watershed.slug)])
+
+    def __str__(self):
+        return self.title

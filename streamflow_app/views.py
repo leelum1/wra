@@ -1,17 +1,18 @@
+from datetime import datetime
+from statistics import mean, stdev
+from json import dumps
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.apps import apps
-from datetime import datetime
-from statistics import mean, stdev
-import json
+from django.shortcuts import get_object_or_404
 from .forms import MeteringForm
 from . import recession
-from .models import FuessGauge, MeteringSite
+from .models import MeteringSite #, Feuss
 
-class FuessListView(ListView):
-    model = FuessGauge
-    template_name = "streamflow_app/fuess_list.html"
-    context_object_name = "gauges"
+# class FuessListView(ListView):
+#     model = FuessGauge
+#     template_name = "streamflow_app/fuess_list.html"
+#     context_object_name = "gauges"
 
 class MeteringListView(ListView):
     model = MeteringSite
@@ -25,7 +26,7 @@ class MeteringDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ctx = super(MeteringDetailView, self).get_context_data(**kwargs)
-        current_gauge = MeteringSite.objects.get(code=self.kwargs['pk'])
+        current_gauge = get_object_or_404(MeteringSite, code=self.kwargs['pk'])
         gauge_name = current_gauge.name.replace(' ', '')
         model = apps.get_model('streamflow_app', gauge_name)
         ctx['north'] = current_gauge.northing
@@ -94,6 +95,6 @@ class RecessionTemplateView(TemplateView):
         #call recession functions
         flows = recession.flow_freq(recession.recession(raw_streamflow))
         ctx['flows'] = flows
-        ctx['records'] = json.dumps(flows)
+        ctx['records'] = dumps(flows)
 
         return ctx

@@ -1,13 +1,25 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
-{% block title %}
+{% load static %}
+{% block head %}
   <meta name="description" content="The Water Resources Agency of Trinidad and Tobago
   is responsible for monitoring and protecting the country's water resources, including
   rainfall, streamflow, and groundwater">
   <title>Water Resources of Trinidad and Tobago</title>
-{% endblock title %}
-{% block head %}
   <style media="screen">
+    .weather{
+      display: flex;
+      justify-content: center;
+      padding-top: 0;
+      padding-bottom: 0;
+      font-size: 12px;
+      margin: auto;
+    }
+
+    .weather div{
+      text-align: center;
+      width: 25%;
+    }
+
     .button-nav{
       background-color: white;
       height: 100%;
@@ -41,12 +53,26 @@
       text-decoration: none;
     }
 
-    footer{
-      margin-top: 0px;;
+    .history{
+      padding: 8%;
+      text-align:center;
+      min-height:50vh;
     }
   </style>
 {% endblock head %}
 {% block body_block %}
+  <div class="weather">
+    <div class="">
+      Town: <span id="weather-town"></span>
+    </div>
+    <div class="">
+      Temp: <span id="weather-temp"></span> &#8451;
+    </div>
+    <div class="">
+      Currently: <span id="weather-current"></span>
+    </div>
+  </div>
+
   <div class="container-fluid" style="background-color:white; text-align:center;">
     <h1 class="display-4" style="margin-top:30px; text-align:center;">Water Resources of Trinidad and Tobago</h1>
     <p class="lead">The Water Resources Agency is a department of the Water and Sewerage
@@ -80,8 +106,8 @@
         <a href="{% url 'watershed_app:watersheds' %}">
           <button class="button-nav" type="button">
             <img src="{% static 'images/watershedicon.png' %}" style="height:100px;" alt="">
-            <p class="btn-title">Watersheds</p>
-            <p class="btn-text">Learn more about watersheds in Trinidad and Tobago</p>
+            <p class="btn-title">Rivers & Watersheds</p>
+            <p class="btn-text">Learn more about rivers and watersheds in Trinidad and Tobago</p>
           </button>
       </div>
       <div class="col-md-3 col-sm-6" style="text-align:center;">
@@ -96,11 +122,9 @@
     </div>
   </div>
 
-  <img src="{% static 'images/IMG_1592.png' %}" style="height:400px; width:100%;" alt="">
-
-  <div class="container-fluid" style="text-align:center;">
+  <div class="container-fluid history">
     <h2>A History of Water Resources</h2>
-    <p class="lead" style="text-align:center;">The Government of Trinidad and Tobago, in recognizing the need for
+    <p style="text-align:center;">The Government of Trinidad and Tobago, in recognizing the need for
       the development and control of the country's water resources, entered
       into an arrangement with a Canadian firm to train persons in the
       collection and analysis of basic hydrological and hydrometeorological
@@ -110,28 +134,82 @@
       and Sewerage Authority in March 1976.</p>
   </div>
 
-  <div class="container-fluid" style="background-color:white;">
+  <div class="container-fluid" style="background-color:white; min-height:50vh; padding-bottom:50px;">
     <div class="row" style="margin-top:30px;">
-      <div class="col-md-7 col-sm-12">
-        <h2>Functions of the Water Resources Agency</h2>
+      <h2 style="width:100%; text-align:center; margin-bottom:30px;">Functions of the Water Resources Agency</h2>
+      <div class="col-lg-7 col-md-12">
         <p>To achieve the mission of the WRA, the following key functions guide
           the daily operations.</p>
         <ul>
-          <li>Monitor rainfall, streamflow, groundwater, and water quality across
-            Trinidad and Tobago.</li>
-          <li>Manage the country's water resources by guiding abstraction from the
-            major reservoirs, wells, and rivers.</li>
-          <li>Issue water abstraction licences.</li>
+          <li>Undertake water resources monitoring and assessment with respect to quality and quantity.</li>
+          <li>Undertake water allocation, regulation, and licensing of water abstraction.</li>
+          <li>Undertake water resources planning, investigation and development.</li>
+          <li>Promote and coordinate the implementation of Integrated Water Resources Management (IWRM).</li>
+          <li>Develop and maintain a National Water Resources database and information system.</li>
         </ul>
       </div>
-      <div class="col-md-5">
-        <img src="{% static 'images/waterbalance.jpg' %}" alt="Some cool infographic">
+      <div class="col-lg-5 col-md-12">
+        <h5 style="text-align:center;">Sources of Water Supply in Trinidad and Tobago</h5>
+        <div id="svg-source" style="text-align:center;"></div>
       </div>
     </div>
   </div>
 
 {% endblock body_block %}
 {% block javascript %}
+  <script type="text/javascript">
+    $(document).ready(function(){
+      const towns = [{'town': 'Port-of-Spain', 'code':3573890, 'temp':0, 'current':'',},
+                      {'town':'Arima', 'code':3575051, 'temp':0, 'current':'',},
+                      {'town':'Chaguanas', 'code':3574810, 'temp':0, 'current':'',},
+                      {'town':'San Fernando', 'code':3573739, 'temp':0, 'current':'',},
+                      {'town':'Mayaro', 'code':3573840, 'temp':0, 'current':'',},
+                      {'town':'Point Fortin', 'code':3573899, 'temp':0, 'current':'',},
+                      {'town':'Scarborough', 'code':3573703, 'temp':0, 'current':'',},];
+
+      var town = 0;
+      const weather = $.getJSON("https://api.openweathermap.org/data/2.5/weather?id=" + towns[town]['code'] + "&APPID=b5a0e0898a6fd1c38703f524b0ea0740",function(result){
+        $('#weather-town').text(towns[town]['town']);
+        $('#weather-temp').text((result['main']['temp'] - 273.15).toFixed(1));
+        $('#weather-current').text(result["weather"][0]['main']);
+        town++;
+      });
+      //Call weather every 3 seconds
+      setInterval(function(){
+        const weather = $.getJSON("https://api.openweathermap.org/data/2.5/weather?id=" + towns[town]['code'] + "&APPID=b5a0e0898a6fd1c38703f524b0ea0740",function(result){
+          $('#weather-town').text(towns[town]['town']);
+          $('#weather-temp').text((result['main']['temp'] - 273.15).toFixed(1));
+          $('#weather-current').text(result["weather"][0]['main']);
+        });
+        town++;
+        if (town > towns.length - 1) {
+          town = 0;
+        }
+      }, 5000);
+    });
+  </script>
+
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="{% static 'js/d3pie.js' %}"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      var pie = new d3pie("svg-source", {
+        "size": {
+          "canvasWidth": 500,
+          "canvasHeight": 300,
+          "pieOuterRadius": "80%"
+        },
+        "data": {
+          "content": [
+            {'label': 'Surface', 'value': 60},
+            {'label': 'Groundwater', 'value': 28},
+            {'label': 'Desalination', 'value': 12},
+            ]
+        }
+      });
+    });
+  </script>
+
   <script type="application/ld+json">
   {
     "@context": "http://schema.org",

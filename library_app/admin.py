@@ -1,6 +1,6 @@
 from django.contrib import admin
 from markdownx.admin import MarkdownxModelAdmin
-from .models import Book, SOP
+from .models import Book, BookRequest, SOP
 
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'year', 'author')
@@ -12,4 +12,5 @@ class SOPAdmin(MarkdownxModelAdmin):
 
 # Register your models here.
 admin.site.register(Book, BookAdmin)
+admin.site.register(BookRequest)
 admin.site.register(SOP, SOPAdmin)

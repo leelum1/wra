@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+{% load md2 %}
+{% block head %}
+  <title>{{ post.title }}</title>
+  <meta name="description" content="">
+  <style media="screen">
+    h1{
+      text-align: center;
+      padding-bottom: 10px;
+      border-bottom:  2px solid black;
+    }
+
+    .main{
+      background-color: white;
+      border-radius: 5px;
+      max-width: 800px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      min-height: 80vh;
+      position: relative;
+    }
+
+    .buttons{
+      margin-top: 20px;
+      position: absolute;
+      bottom: 50px;
+      width: 100%;
+    }
+
+    .buttons .btn{
+      width:45%;
+    }
+
+    {% if post.cover %}
+      .image-wrapper{
+        height: 400px;
+        text-align: center;
+      }
+
+      .background-image{
+        position: absolute;
+        z-index: -1;
+        background-image: url("{{ post.cover.url }}");
+        width: 100%;
+        height: 400px;
+
+        -webkit-filter: blur(5px);
+        -moz-filter: blur(5px);
+        -o-filter: blur(5px);
+        -ms-filter: blur(5px);
+        filter: blur(5px);
+      }
+
+      .coverimgdiv{
+        position: relative;
+      }
+
+      .coverimg{
+        height: 400px;
+      }
+    {% endif %}
+  </style>
+{% endblock head %}
+{% block body_block %}
+  <div class="container-fluid main">
+    {% if post.cover %}
+      <div class="image-wrapper">
+        <div class="background-image"></div>
+
+        <div class="coverimgdiv">
+          <img class="coverimg" src="{{ post.cover.url }}" alt="No Image">
+        </div>
+      </div>
+    {% endif %}
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.text|markdown }}</p>
+    {% if user.is_staff %}
+      <div class="buttons">
+        <a class="btn btn-warning" href="{% url 'blog_app:update' slug=post.slug %}">Update Post</a>
+        <a class="btn btn-danger" href="{% url 'blog_app:delete' slug=post.slug %}">Delete Post</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock body_block %}

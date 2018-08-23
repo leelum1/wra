@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from markdownx.models import MarkdownxField
+from asset_app.models import User
 
 class Book(models.Model):
     STATUS = (
@@ -29,6 +30,17 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+
+class BookRequest(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    request_date = models.DateTimeField(auto_now=True)
+    request_fullfilled = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.book.title + " by " + self.User.first_name + " " + self.User.last_name
+
+
 class SOP(models.Model):
     CATEGORY = (
         ('general', 'General'),
@@ -45,7 +57,7 @@ class SOP(models.Model):
     text = MarkdownxField(blank=True, null=True)
 
     def get_absolute_url(self):
-        return reverse('library_app:detail',kwargs={'pk':self.pk})
+        return reverse('library_app:sop-detail',kwargs={'slug':self.slug})
 
     def __str__(self):
         return self.title

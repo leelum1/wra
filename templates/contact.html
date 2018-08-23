@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block head %}
+  <title>Contact Us!</title>
+  <meta name="description" content="Contact page for waterresourcestt.com">
+  <style media="screen">
+    input{
+      margin-bottom: 20px;
+    }
+
+
+    form .btn{
+      margin-top: 20px;
+    }
+
+    .contact{
+      background-color: white;
+      border-radius: 5px;
+      max-width: 800px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+  </style>
+{% endblock head %}
+{% block body_block %}
+  <div class="container-fluid contact">
+    <h1>Contact Us</h1>
+    <p>If you have any questions or comments about anything found on this website,
+      please fill out the form below. Messages considered to be spam will be ignored.</p>
+
+    <form class="contact-form" action="{% url 'contact' %}" method="post" next-url="{% url 'index' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        {% for field in form %}
+          <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}
+            {% render_field field class="form-control" %}
+            {% if field.help_text %}
+            <p class="help">{{ field.help_text|safe }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="g-recaptcha" data-sitekey="6LchHGsUAAAAANEB0mug4JNyehtHfRjnxgDn9_ZR" data-callback="recaptchaEnable"></div>
+      <input id="submit-button" class="btn btn-primary" type="submit" value="Send Message">
+    </form>
+  </div>
+{% endblock body_block %}
+{% block javascript %}
+  <script src='https://www.google.com/recaptcha/api.js'></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      document.getElementById("submit-button").disabled = true;
+    });
+
+    function recaptchaEnable(){
+      document.getElementById("submit-button").disabled = false;
+    }
+  </script>
+
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      var contactForm = $(".contact-form");
+      var contactFormMethod = contactForm.attr("method");
+      var contactFormEndpoint = contactForm.attr("action");
+      var nextURL = contactForm.attr("next-url");
+      contactForm.submit(function(event){
+        event.preventDefault()
+        var contactFormData = contactForm.serialize()
+        $.ajax({
+          method: contactFormMethod,
+          url: contactFormEndpoint,
+          data: contactFormData,
+          success: function(data){
+            swal({
+              title: "Message Received!",
+              text: data.message,
+              icon: "success",
+            }).then((value) => {
+              window.location.href = nextURL;
+            });
+          },
+          error: function(error){
+            console.log(error);
+            alert("An error occurred, please try again")
+            window.location.reload()
+          }
+        });
+      });
+    });
+  </script>
+{% endblock javascript %}

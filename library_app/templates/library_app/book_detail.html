@@ -23,9 +23,9 @@
     <div class="row">
       <div class="col-md-3 col-sm-12" style="text-align:center;">
         {% if book.bookcover %}
-          <img src="{{ book.bookcover.url }}" alt="Book Cover">
+          <img width="85%" src="{{ book.bookcover.url }}" alt="Book Cover">
         {% else %}
-          <img src="{% static 'images/no_preview.png' %}" alt="Book Cover">
+          <img width="85%" src="{% static 'images/no_preview.png' %}" alt="Book Cover">
         {% endif %}
       </div>
       <div class="col-md-9 col-sm-12">

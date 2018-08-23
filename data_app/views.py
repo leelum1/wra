@@ -1,3 +1,8 @@
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+from csv import reader
+from json import dumps
+
 from django.views.generic import TemplateView, ListView, DetailView
 from django.shortcuts import get_object_or_404, render
 from django.apps import apps
@@ -7,12 +12,6 @@ from django.contrib.auth.decorators import login_required
 from .models import RainGauge, GaugeReader
 from .IDF_calc import *
 from .stats_calc import *
-
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-import csv
-import json
-import numpy
 
 class GaugeListView(ListView):
     model = RainGauge
@@ -42,7 +41,7 @@ class GaugeDetailView(DetailView):
         self.request.session['code'] = current_gauge.code
 
         with open('rainstats.csv', 'r') as f:
-          rainStatsList = list(csv.reader(f))
+          rainStatsList = list(reader(f))
           for gauge in rainStatsList:
               if gauge[0] == gauge_name:
                   ctx['statslist'] = gauge
@@ -119,19 +118,14 @@ class GaugeDetailView(DetailView):
                 raindict = {"x":currentdate.strftime('%m/%d/%Y'), "y":0}
             raingraph.append(raindict)
             currentdate -= relativedelta(months=1)
-        ctx['rainjson'] = json.dumps(raingraph)
-        ctx['max_json'] = json.dumps(max_json)
+        ctx['rainjson'] = dumps(raingraph)
+        ctx['max_json'] = dumps(max_json)
 
         return ctx
 
 
-class StatsTemplateView(TemplateView):
-    template_name = 'data_app/gauge_stats.html'
-
-    def get_context_data(self, **kwargs):
-        ctx = super(StatsTemplateView, self).get_context_data(**kwargs)
-        #rainStatsCalc()
-        return ctx
+# To recalculate the rain stats, run: python rainStatsCalc()
+# rainStatsCalc()
 
 
 @login_required
@@ -179,6 +173,30 @@ def addRainfall(request):
 
     return render(request, 'data_app/add_rainfall.html', ctx)
 
+class CompareTemplateView(TemplateView):
+    template_name = 'data_app/gauge_compare.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(CompareTemplateView, self).get_context_data(**kwargs)
+        ctx['gauges'] = RainGauge.objects.filter(category='Pot')
+
+        if self.request.GET.get('gauge1') and self.request.GET.get('gauge2'):
+            startdate = self.request.GET.get('startdate')
+            gauge1 = RainGauge.objects.get(name=self.request.GET.get('gauge1'))
+            gauge2 = RainGauge.objects.get(name=self.request.GET.get('gauge2'))
+            gauge1_name = gauge1.name.replace(' ', '')
+            gauge2_name = gauge2.name.replace(' ', '')
+            record1 = apps.get_model('data_app', gauge1_name)
+            record2 = apps.get_model('data_app', gauge2_name)
+
+            ctx['date'] = datetime.strptime(startdate, '%Y-%m-%d')
+            ctx['gauge1'] = gauge1
+            ctx['gauge2'] = gauge2
+            ctx['record1'] = record1.objects.get(date=startdate)
+            ctx['record2'] = record2.objects.get(date=startdate)
+
+        return ctx
+
 
 class IDFView(TemplateView):
     template_name = 'data_app/IDFresult.html'
@@ -204,32 +222,7 @@ class IDFView(TemplateView):
                 rainfall.append(max_rain) #list of maximum values
         ctx['IDF'] = dur_freq(short_int(rainfall))
         ctx['DDF'] = dur_freq(ddf_int(rainfall))
-        ctx['json_idf'] = json.dumps(ctx['IDF'])
-        ctx['json_ddf'] = json.dumps(ctx['DDF'])
-
-        return ctx
-
-
-class CompareTemplateView(TemplateView):
-    template_name = 'data_app/gauge_compare.html'
-
-    def get_context_data(self, **kwargs):
-        ctx = super(CompareTemplateView, self).get_context_data(**kwargs)
-        ctx['gauges'] = RainGauge.objects.filter(category='Pot')
-
-        if self.request.GET.get('gauge1') and self.request.GET.get('gauge2'):
-            startdate = self.request.GET.get('startdate')
-            gauge1 = RainGauge.objects.get(name=self.request.GET.get('gauge1'))
-            gauge2 = RainGauge.objects.get(name=self.request.GET.get('gauge2'))
-            gauge1_name = gauge1.name.replace(' ', '')
-            gauge2_name = gauge2.name.replace(' ', '')
-            record1 = apps.get_model('data_app', gauge1_name)
-            record2 = apps.get_model('data_app', gauge2_name)
-
-            ctx['date'] = datetime.strptime(startdate, '%Y-%m-%d')
-            ctx['gauge1'] = gauge1
-            ctx['gauge2'] = gauge2
-            ctx['record1'] = record1.objects.get(date=startdate)
-            ctx['record2'] = record2.objects.get(date=startdate)
+        ctx['json_idf'] = dumps(ctx['IDF'])
+        ctx['json_ddf'] = dumps(ctx['DDF'])
 
         return ctx

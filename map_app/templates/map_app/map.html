@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% block head %}
   <meta name="description" content="Locations of watersheds, rainfall and streamflow gauges, observation wells in Trinidad and Tobago">
-  <title>Map of Water Resources data in Trinidad and Tobago</title>
+  <title>Map of Water Resources in Trinidad and Tobago</title>
   <script src='https://api.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.js'></script>
   <link href='https://api.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css' rel='stylesheet' />
   <link rel="stylesheet" href="{% static 'css/map.css' %}">
@@ -26,9 +26,18 @@
             <svg height="15" width="10%">
               <circle cx="50%" cy="50%" r="5" fill="red" />
             </svg>
-            Rainfall
+            Rainfall Gauges
           </button>
           <button id="Rainfallarrow" class="arrow-layer" disabled onclick="LayerDetail('Rainfall')"><img class="rightArrow" src="{% static 'images/rightArrow.png' %}" alt="rightArrow"></button>
+        </div>
+        <div class="row no-gutters">
+          <button class="main-layer" onclick="ToggleLayer('Rivers')">
+            <svg height="15" width="10%">
+              <line x1="50%" y1="0" x2="50%" y2="100%" style="stroke:#1163C8;stroke-width:2" />
+            </svg>
+            Rivers
+          </button>
+          <button id="Riversarrow" class="arrow-layer" disabled onclick="LayerDetail('Rivers')"><img class="rightArrow" src="{% static 'images/rightArrow.png' %}" alt="rightArrow"></button>
         </div>
         <div class="row no-gutters">
           <button class="main-layer" onclick="ToggleLayer('Intakes')">
@@ -107,8 +116,9 @@
 
       <div id='map'></div>
 
+      <img id="zoomout" src="{% static 'images/zoomout.png' %}" onclick="zoomOut()" alt="Zoom out"/>
+
       <img id="basemenu" onclick="switchBase()"/>
-      {# <button id="basemenu" type="button" onclick="switchLayer()">Sat</button>#}
 
       <pre id="coords"></pre>
     </div>
@@ -210,6 +220,8 @@
         listingEl.innerHTML = '<p>Watersheds</p>'
       } else if(layer == 'Rainfall'){
         listingEl.innerHTML = '<p>Rainfall</p>'
+      } else if(layer == 'Rivers'){
+        listingEl.innerHTML = '<p>Rivers</p>'
       } else if(layer == 'Intakes'){
         listingEl.innerHTML = '<p>Intakes</p>'
       } else if(layer == 'Streamflow'){
@@ -255,6 +267,17 @@
               <tr><td>Lat:</td><td>' + feature.geometry.coordinates[1].toFixed(6) + '</td></tr>\
               <tr><td colspan=2 style="text-align:center; height:40px;"><a href=' + url_mask + '>Navigate to Data Query</a></td></tr></table>')
               .addTo(map);
+            });
+          }else if(layer == 'Rivers'){
+            item.textContent = prop.Name;
+            item.addEventListener('mouseover', function() {
+              var rivers = map.queryRenderedFeatures('Rivers');
+              var filter = rivers.reduce(function(memo) {
+                      memo.push(prop.Name);
+                      return memo;
+                  }, ['in', 'Name']);
+
+              map.setFilter("Rivers-highlighted", filter);
             });
           }else if(layer == 'Intakes'){
             item.textContent = prop.Name;

@@ -7,7 +7,17 @@ class StaticViewSitemap(Sitemap):
     changefreq = 'monthly'
 
     def items(self):
-        return ['index', 'legal', 'data_app:data', 'library_app:library', 'map_app:map', 'watershed_app:watersheds']
+        return ['index',
+                'legal',
+                'data',
+                'iwrm',
+                'contact',
+                'library_app:library',
+                'map_app:map',
+                'rivers_app:list',
+                'reservoir_app:reservoir',
+                'spi_app:SPI',
+                'watershed_app:watersheds']
 
     def location(self, item):
         return reverse(item)

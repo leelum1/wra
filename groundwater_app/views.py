@@ -1,10 +1,12 @@
+from datetime import datetime
+from json import dumps
 from django.views.generic import TemplateView, ListView, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.apps import apps
+from django.shortcuts import get_object_or_404
 from .forms import WellForm
 from .models import Well
-from datetime import datetime
-import json
+
 
 class WellListView(ListView):
     model = Well
@@ -18,7 +20,7 @@ class WellDetailView(DetailView):
 
     # def get_context_data(self, **kwargs):
     #     ctx = super(WellDetailView, self).get_context_data(**kwargs)
-    #     current_well = Well.objects.get(index_no=self.kwargs['pk'])
+    #     current_well = get_object_or_404(Well, index_no=self.kwargs['pk'])
     #     well_name = current_well.name.replace(' ', '')
     #     model = apps.get_model('groundwater_app', well_name)
     #     self.request.session['wellname'] = well_name
@@ -39,7 +41,7 @@ class WellDetailView(DetailView):
     #         depth = str(reading.reading)
     #         welldict = {"x":date, "y":depth}
     #         wellgraph.append(welldict)
-    #     ctx['welljson'] = json.dumps(wellgraph)
+    #     ctx['welljson'] = dumps(wellgraph)
     #
     #     return ctx
 
@@ -74,7 +76,7 @@ class ReadingCreateView(LoginRequiredMixin, CreateView):
 
     #Get model
     def get(self, request, *args, **kwargs):
-        current_well = Well.objects.get(index_no=self.kwargs['pk'])
+        current_well = get_object_or_404(Well, index_no=self.kwargs['pk'])
         well_name = current_well.name.replace(' ', '')
         self.model = apps.get_model('groundwater_app', well_name)
         return super(ReadingCreateView, self).get(request, *args, **kwargs)
@@ -86,7 +88,7 @@ class ReadingCreateView(LoginRequiredMixin, CreateView):
         return ctx
 
     def post(self, request, *args, **kwargs):
-        current_well = Well.objects.get(index_no=self.kwargs['pk'])
+        current_well = get_object_or_404(Well, index_no=self.kwargs['pk'])
         well_name = current_well.name.replace(' ', '')
         self.model = apps.get_model('groundwater_app', well_name)
         return super(ReadingCreateView, self).post(request, *args, **kwargs)

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block head %}
+  <title>Rivers in Trinidad and Tobago</title>
+  <meta name="description" content="">
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.css' rel='stylesheet' />
+  <style media="screen">
+    .list{
+      border-bottom: 1px solid grey;
+      display: block;
+      height: 80vh;
+      overflow-y: scroll;
+      width: 100%;
+    }
+
+    a{
+      text-decoration: none;
+    }
+
+    p > a{
+      color:blue;
+      text-decoration: underline;
+    }
+
+    #map{
+      height: 80vh;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+      border: 1px solid black;
+    }
+
+    .mapboxgl-popup-content {
+      padding: 15px;
+    }
+
+    .mapboxgl-popup-content h6{
+      text-align: center;
+      text-decoration: underline;
+    }
+
+    .mapboxgl-popup-content td{
+      border:none;
+      height: 15px;
+    }
+  </style>
+{% endblock head %}
+{% block body_block %}
+  <div class="container-fluid">
+    <h1 class="display-4">Rivers in Trinidad and Tobago</h1>
+    <p>Trinidad and Tobago hosts over a hundred rivers, spread over
+      <a href="{% url 'watershed_app:watersheds' %}">69 watersheds.</a>
+      Rivers in the Northern Range of Trinidad have clear waters and feature waterfalls,
+      rapids, gorges, and pools. Zoom in to the map to view the rivers. Note that
+      the rivers may not align with the baselayer due to the dynamic nature of rivers.
+      Alternatively, search below or click on a river in the table learn more of
+      the river and the watershed that it falls in. Unfortunately we don't have any
+      data for Tobago, which seems to be a common theme for this website.</p>
+    <input id="searchInput" class="form-control" type="text" name="name" placeholder="Search for a river">
+  </div>
+
+  <div class="container-fluid" style="padding-bottom:50px;">
+    <div class="row">
+      <div class="col-lg-5 col-md-12 list">
+        <div style="text-align:right;">
+          <a id="copy" onclick="CopyStuff(document.getElementById('riverslist'));">Copy table</a>
+        </div>
+        <table id="riverslist">
+          <thead>
+            <th>River</th>
+            <th>Watershed</th>
+            <th>Length (km)</th>
+          </thead>
+          <tbody>
+            {% for river in rivers %}
+              <tr>
+                <td><a href="{% url 'watershed_app:detail' slug=river.watershed.slug %}">{{ river.name }}</a></td>
+                <td><a href="{% url 'watershed_app:detail' slug=river.watershed.slug %}">{{ river.watershed }}</a></td>
+                <td>{{ river.length_to_km|floatformat:1 }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="col-lg-7 col-md-12">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+{% endblock body_block %}
+{% block javascript %}
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      results = $('#riverslist').DataTable({
+        "order": [ 0, 'asc' ],
+        "paging": false,
+        "searching": true,
+        "info": false,
+        "dom": 'lrtip',
+      });
+      $('#searchInput').keyup(function(){
+        results.search($(this).val()).draw() ;
+      })
+    });
+  </script>
+
+  <script type="text/javascript">
+    // Mapbox access token
+    mapboxgl.accessToken = 'pk.eyJ1IjoibGVlbHVtMSIsImEiOiJjamFzNHM0cmo0bmduMnFwbHh0MXNweW5jIn0.1fUr70BuY4Kk4BERLB5Pkg';
+
+    //Initialize map object
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/basic-v9',
+      center: [-61.4, 10.45],
+      zoom: 8
+    });
+
+    //Constrain map extent
+    map.setMaxBounds([[-62.2, 9.8],[-60.3, 11.4]]);
+
+    //Scale
+    var scale = new mapboxgl.ScaleControl({
+        maxWidth: 80,
+        unit: 'metric'
+    });
+    map.addControl(scale);
+
+    //Initialize overlay layers
+    map.on('load', function() {
+      map.addSource('Watersheds-3dt1kb', {
+            type: 'vector',
+            url: 'mapbox://leelum1.26t26vhq'
+        });
+
+      map.addSource('Rivers-3omzdt', {
+            type: 'vector',
+            url: 'mapbox://leelum1.cx1mwqqk'
+        });
+
+      map.addLayer({
+          'id': 'Watersheds',
+          'type': 'fill',
+          'source': 'Watersheds-3dt1kb',
+          'source-layer': 'Watersheds-3dt1kb',
+          'layout': {
+              'visibility': 'visible',
+          },
+          'paint': {
+              'fill-color': 'rgba(0, 0, 0, 0)',
+              'fill-outline-color': 'rgba(200, 100, 240, 1)'
+          }
+      });
+
+      map.addLayer({
+        'id': 'Rivers',
+        'type': 'line',
+        'source': 'Rivers-3omzdt',
+        'source-layer': 'Rivers-3omzdt',
+        "minzoom": 10,
+        "layout": {
+            "line-join": "round",
+            "line-cap": "round",
+            'visibility': 'visible',
+        },
+        "paint": {
+            "line-color": "#1163C8",
+            "line-width": 2
+        }
+      });
+    });
+
+    // Change the cursor to a pointer.
+    map.on('mouseenter', 'Rivers', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a cursor.
+    map.on('mouseleave', 'Rivers', function () {
+        map.getCanvas().style.cursor = '';
+    });
+
+    map.on('click', 'Rivers', function (e) {
+      new mapboxgl.Popup().setLngLat(e.lngLat)
+          .setHTML('<h6>' + e.features[0].properties.Name + ' River</h6>\
+          <table><tr><td>Watershed:</td><td>' + e.features[0].properties.Watershed + '</td></tr>\
+          <tr><td>Length:</td><td>' + (e.features[0].properties.Length / 1000).toFixed(1) + ' km</td></tr></table>')
+          .addTo(map);
+      });
+  </script>
+{% endblock javascript %}
